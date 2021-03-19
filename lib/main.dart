@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:morse_code_translator/widgets/about.dart';
+import 'package:morse_code_translator/widgets/translate_from.dart';
+import 'package:morse_code_translator/widgets/translate_to.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MorseCodeTranslatorApp());
 }
 
-class MyApp extends StatelessWidget {
+class MorseCodeTranslatorApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Morse Code Translator',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -22,13 +25,13 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MCTHomePage(title: 'Morse Code Translator'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class MCTHomePage extends StatefulWidget {
+  MCTHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -42,25 +45,20 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MCTHomePageState createState() => _MCTHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+class _MCTHomePageState extends State<MCTHomePage> {
   int _currentIndex = 0;
   final List<Widget> _children = [
-
+    TranslateToMorsePage(),
+    TranslateFromMorsePage(),
+    AboutWidget()
   ];
 
-  void _incrementCounter() {
+  void onTabTapped(int index) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _currentIndex = index;
     });
   }
 
@@ -78,51 +76,22 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0, // this will be set when a new tab is tapped
+        currentIndex: _currentIndex, // this will be set when a new tab is tapped
+        onTap: onTabTapped,
         items: [
           BottomNavigationBarItem(
-            icon: new Icon(Icons.home),
-            title: new Text('To'),
+            icon: new Icon(Icons.login),
+            label: 'To Morse',
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.mail),
-            title: new Text('From'),
+            icon: new Icon(Icons.logout),
+            label: 'From Morse',
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.info),
+            label: 'About',
           ),
         ],
       ),
