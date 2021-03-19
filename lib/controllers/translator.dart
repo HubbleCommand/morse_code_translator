@@ -86,21 +86,14 @@ class Translator {
 
   static String translateToMorse(String textToTranslate, Alphabet alphabet){
     String morseString = '';
+
     for(int i = 0; i < textToTranslate.length; i++){
-      //TODO fix redundant checking!
-      if(!_alphabetInternationalITU.containsKey(textToTranslate[i].toLowerCase()) && textToTranslate[i] != ' ' && textToTranslate[i] != '.'){
-        return null;  //If the character isn't valid, return null
+      if(alphabet.containsCharTranslation(textToTranslate[i])){
+        morseString += alphabet.getCharTranslation(textToTranslate[i]) + _letter_gap;
+      } else if (textToTranslate[i] == ' ' || textToTranslate[i] == '.') {
+        morseString += _word_gap;
       } else {
-        if(textToTranslate[i] == ' ' || textToTranslate[i] == '.'){
-          morseString += _word_gap;
-        }
-        else if(_alphabetInternationalITU.containsKey(textToTranslate[i].toLowerCase())){ //Better to have last? Most characters will NOT be punctuation,
-          //charToAdd = _alphabet_international_ITU[textToTranslate[i]];
-          morseString += _alphabetInternationalITU[textToTranslate[i].toLowerCase()] + _letter_gap;
-        }
-        else {
-          return null;
-        }
+        return null;
       }
     }
 
