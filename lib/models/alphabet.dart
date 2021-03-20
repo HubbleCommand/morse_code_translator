@@ -1,51 +1,6 @@
 abstract class Alphabet{
-  static const Map<String, String> alphabet = {};
-  bool containsCharTranslation(String char);
-  String getCharTranslation(String char);
-}
+  Map<String, String> alphabet = {};
 
-//class AlphabetITU <T extends Alphabet>{
-class AlphabetITU extends Alphabet{
-  static const Map<String, String> alphabet = {
-    'a' : '.-',
-    'b' : '-...',
-    'c' : '-.-.',
-    'd' : '-..',
-    'e' : '.',
-    'f' : '..-.',
-    'g' : '--.',
-    'h' : '....',
-    'i' : '..',
-    'j' : '.---',
-    'k' : '-.-',
-    'l' : '.-..',
-    'm' : '--',
-    'n' : '-.',
-    'o' : '---',
-    'p' : '.--.',
-    'q' : '--.-',
-    'r' : '.-.',
-    's' : '...',
-    't' : '-',
-    'u' : '..-',
-    'v' : '...-',
-    'w' : '.--',
-    'x' : '-..-',
-    'y' : '-.--',
-    'z' : '--..',
-    '1' : '.----',
-    '2' : '..---',
-    '3' : '...--',
-    '4' : '....-',
-    '5' : '.....',
-    '6' : '-....',
-    '7' : '--...',
-    '8' : '---..',
-    '9' : '----.',
-    '0' : '-----',
-  };
-
-  @override
   bool containsCharTranslation(String char){
     if(alphabet.containsKey(char.toLowerCase())){
       return true;
@@ -54,69 +9,160 @@ class AlphabetITU extends Alphabet{
     }
   }
 
-  @override
   String getCharTranslation(String char) {
-    // TODO: implement getCharTranslation
-    //throw UnimplementedError();
-    if(containsCharTranslation(char)){
-      return alphabet[char];
+    if(containsCharTranslation(char.toLowerCase())){
+      return alphabet[char.toLowerCase()];
+    } else {
+      return null;
+    }
+  }
+
+  Map<String, String> getAlphabet(){
+    return alphabet;
+  }
+
+  bool containsMorseSymbolTranslation(String morseSymbol) {
+    if(alphabet.containsValue(morseSymbol)){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  String getMorseSymbolTranslation(String morseSymbol) {
+    if(containsCharTranslation(morseSymbol)){
+      return alphabet.keys.firstWhere((k) => alphabet[k] == morseSymbol);
     } else {
       return null;
     }
   }
 }
 
-/*class AlphabetGerke extends Alphabet{
-
-}*/
+class AlphabetITU extends Alphabet{
+  Map<String, String> get alphabet {
+    return {
+      'a' : '.-',
+      'b' : '-...',
+      'c' : '-.-.',
+      'd' : '-..',
+      'e' : '.',
+      'f' : '..-.',
+      'g' : '--.',
+      'h' : '....',
+      'i' : '..',
+      'j' : '.---',
+      'k' : '-.-',
+      'l' : '.-..',
+      'm' : '--',
+      'n' : '-.',
+      'o' : '---',
+      'p' : '.--.',
+      'q' : '--.-',
+      'r' : '.-.',
+      's' : '...',
+      't' : '-',
+      'u' : '..-',
+      'v' : '...-',
+      'w' : '.--',
+      'x' : '-..-',
+      'y' : '-.--',
+      'z' : '--..',
+      '1' : '.----',
+      '2' : '..---',
+      '3' : '...--',
+      '4' : '....-',
+      '5' : '.....',
+      '6' : '-....',
+      '7' : '--...',
+      '8' : '---..',
+      '9' : '----.',
+      '0' : '-----',
+    };
+  }
+}
 
 class AlphabetOriginal extends Alphabet{
-  static const Map<String, String> alphabet = {
-    'a' : '.-',
-    'b' : '-...',
-    'c' : '.. .',
-    'd' : '-..',
-    'e' : '.',
-    'f' : '.-.',
-    'g' : '--.',
-    'h' : '....',
-    'i' : '..',
-    'j' : '-.-.',
-    'k' : '-.-',
-    'l' : '-.', //SPECIAL, tone lasts for the full time, no gap
-    'm' : '--',
-    'n' : '-.',
-    'o' : '..',
-    'p' : '.....',
-    'q' : '..-.',
-    'r' : '. ..',
-    's' : '...',
-    't' : '-',
-    'u' : '..-',
-    'v' : '...-',
-    'w' : '.--',
-    'x' : '.-..',
-    'y' : '.. ..',
-    'z' : '... .',
-    '1' : '.--..',
-    '2' : '..-..',
-    '3' : '...-.',
-    '4' : '....-',
-    '5' : '---',
-    '6' : '......',
-    '7' : '--..',
-    '8' : '-....',
-    '9' : '-..-',
-    '0' : '-----',
-  };
-
-  @override
-  bool containsCharTranslation(String char) {
-
+  Map<String, String> get alphabet {
+    return {
+      'a': '.-',
+      'b': '-...',
+      'c': '.. .',
+      'd': '-..',
+      'e': '.',
+      'f': '.-.',
+      'g': '--.',
+      'h': '....',
+      'i': '..',
+      'j': '-.-.',
+      'k': '-.-',
+      'l': '-.', //SPECIAL, tone lasts for the full time, no gap
+      'm': '--',
+      'n': '-.',
+      'o': '..',
+      'p': '.....',
+      'q': '..-.',
+      'r': '. ..',
+      's': '...',
+      't': '-',
+      'u': '..-',
+      'v': '...-',
+      'w': '.--',
+      'x': '.-..',
+      'y': '.. ..',
+      'z': '... .',
+      '1': '.--..',
+      '2': '..-..',
+      '3': '...-.',
+      '4': '....-',
+      '5': '---',
+      '6': '......',
+      '7': '--..',
+      '8': '-....',
+      '9': '-..-',
+      '0': '-----', //SPECIAL, tone lasts entire duration
+    };
   }
+}
 
-  @override
-  String getCharTranslation(String char) {
-
+class AlphabetGerke extends Alphabet{
+  Map<String, String> get alphabet {
+    return {
+      'a': '.-',
+      'b': '-...',
+      'c': '-.-.',
+      'd': '-..',
+      'e': '.',
+      'f': '..-.',
+      'g': '--.',
+      'h': '....',
+      'i': '..',
+      'j': '..',
+      'k': '-.-',
+      'l': '.-..',
+      'm': '--',
+      'n': '-.',
+      'o': '.-...',
+      'p': '.....',
+      'q': '--.-',
+      'r': '.-.',
+      's': '...',
+      't': '-',
+      'u': '..-',
+      'v': '...-',
+      'w': '.--',
+      'x': '..-...',
+      'y': '--...',
+      'z': '.--..',
+      '1': '.--.',
+      '2': '..-..',
+      '3': '...-.',
+      '4': '....-',
+      '5': '---',
+      '6': '......',
+      '7': '--..',
+      '8': '-....',
+      '9': '-..-',
+      '0': '-----', //SPECIAL, tone lasts entire duration
+    };
   }
 }
