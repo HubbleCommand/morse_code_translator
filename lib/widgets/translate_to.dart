@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:morse_code_translator/controllers/translator.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
@@ -17,6 +18,8 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
   String _textToTranslate = '';
   String _textTranslated = '';
 
+  final FilteringTextInputFormatter morseCodeFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+
   @override
   Widget build(BuildContext context) {
     print(isSelected);
@@ -31,7 +34,6 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                 key: _formKey,
                 child: Column(
                     children: <Widget>[
-                      // Add TextFormFields and ElevatedButton here.
                       ToggleButtons(
                         children: <Widget>[
                           Icon(Icons.lightbulb),
@@ -49,6 +51,7 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                         decoration: InputDecoration(
                             labelText: 'Enter the text to translate'
                         ),
+                        inputFormatters: [morseCodeFilter],
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Please enter some text';
@@ -62,39 +65,40 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                           });
                         },
                       ),
-                      Row(
-                        children: [],
-                      ),
                       ElevatedButton(
                         onPressed: () {
                           // Validate returns true if the form is valid, otherwise false.
                           if (_formKey.currentState.validate()) {
-                            // If the form is valid, display a snackbar. In the real world,
-                            // you'd often call a server or save the information in a database.
-
                             _formKey.currentState.save();
-
-                            ScaffoldMessenger
-                                .of(context)
-                                .showSnackBar(SnackBar(content: Text('Processing Data')));
-                            //print(_formKey.currentState);
 
                             setState(() {
                               var translated = Translator.translateToMorse(_textToTranslate, AlphabetITU());
                               print('Translated: $translated');
                               _textTranslated = translated;
+                              print(isSelected);
                             });
 
-                            if(isSelected[0]){
+                            HapticPlayer hapticPlayer = new HapticPlayer();
 
+                            if(isSelected[0]){
+                              print('Turning on light...');
+                              hapticPlayer.addPlayer(new HapticPlayerLightDecorator());
                             }
 
                             if(isSelected[1]){
-
+                              print('Turning on vibrations...');
+                              hapticPlayer.addPlayer(new HapticPlayerVibrateDecorator());
                             }
 
                             if(isSelected[2]){
+                              print('Turning on audio...');
+                              hapticPlayer.addPlayer(new HapticPlayerAudioDecorator());
+                            }
 
+                            //await compute(hapticPlayer.playText, _textTranslated);
+                            //compute(hapticPlayer.playText, _textTranslated);
+                            if(hapticPlayer.players.isNotEmpty){  //If there are players, play
+                              hapticPlayer.playText(_textTranslated);
                             }
                           }
                         },
@@ -105,18 +109,22 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
               ),
           ),
         ),
+        Divider(thickness: 2.5),
         Expanded(
           flex: 5,
           child: Container(
             // this container won't be larger than
             // half of its parent size
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Text(
+                  'Translation',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                ),
                 Text('$_textTranslated'),
                 TextButton.icon(
                   onPressed: () async {
-                    // Respond to button press
                     ClipboardData data = ClipboardData(text: '$_textTranslated');
                     await Clipboard.setData(data);
 
@@ -125,7 +133,7 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                         .showSnackBar(SnackBar(content: Text('Morse Code copied to clipboard')));
                   },
                   icon: Icon(Icons.sticky_note_2, size: 18),
-                  label: Text(""),
+                  label: Text("Copy to Clipboard"),
                 )
               ],
             )
