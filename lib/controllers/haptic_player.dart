@@ -84,6 +84,7 @@ class HapticPlayerAudioDecorator extends HapticPlayerDecorator{
   Future<void> playTone(int duration) async {
     print('Audioing!');
 
+    //https://medium.com/flutter-community/working-with-bytes-in-dart-6ece83455721
     /*
     Soundpool pool = Soundpool(streamType: StreamType.notification);
 
