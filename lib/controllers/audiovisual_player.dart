@@ -98,9 +98,9 @@ class AudioVisualPlayerAudioDecorator extends AudioVisualPlayerDecorator{
         BitDepth.Depth8bit);
 
     var note = Note(
-      /* frequency */ 220,
+      /* frequency */ 400,
         /* msDuration */ duration,
-        /* waveform */ Waveform.Sine,
+        /* waveform */ Waveform.Square, //Square works best for quick responses to DOT s
         /* volume */ 0.5);
 
     List<int> bytes = List<int>();
