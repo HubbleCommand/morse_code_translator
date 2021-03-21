@@ -56,6 +56,22 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.info),
+              onPressed: (){
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return AlertDialog(
+                        title: Text('About this app'),
+                        content: AboutWidget(),
+                      );
+                    }
+                );
+              }
+          )
+        ],
       ),
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -72,22 +88,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context){
-                return AlertDialog(
-                  title: Text('About this app'),
-                  content: AboutWidget(),
-                );
-              }
-          );
-        },
-        child: const Icon(Icons.info),
-        backgroundColor: Colors.green,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }
