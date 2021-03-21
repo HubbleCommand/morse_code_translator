@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morse_code_translator/widgets/about.dart';
+import 'package:morse_code_translator/widgets/settings.dart';
 import 'package:morse_code_translator/widgets/translate_from.dart';
 import 'package:morse_code_translator/widgets/translate_to.dart';
 
@@ -45,6 +46,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
     TranslateFromMorsePage(),
   ];
 
+  int elementDuration = 240;
+
   void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -70,7 +73,26 @@ class _MCTHomePageState extends State<MCTHomePage> {
                     }
                 );
               }
-          )
+          ),
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: (){
+                //Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new GreenFrog()));
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return AlertDialog(
+                        title: Text('App Settings'),
+                        content: SettingsWidget(elementDuration: elementDuration, onElementDurationCallbackSelect: (int elementDuration){
+                          print(elementDuration);
+                          setState(() {
+                            this.elementDuration = elementDuration;
+                          });
+                        },),
+                      );
+                    }
+                );
+              })
         ],
       ),
       body: _children[_currentIndex],
