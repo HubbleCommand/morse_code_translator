@@ -19,7 +19,7 @@ class SettingsWidget extends StatefulWidget {
   SettingsWidget({Key key, @required this.elementDuration, @required this.onElementDurationCallbackSelect}) : super(key: key);
 
   @override
-  _SettingsWidgetState createState() => _SettingsWidgetState(elementDuration: elementDuration, onElementDurationCallbackSelect: onElementDurationCallbackSelect);
+  _SettingsWidgetState createState() => _SettingsWidgetState(elementDuration: elementDuration);
 }
 
 class _SettingsWidgetState extends State<SettingsWidget> {
@@ -27,7 +27,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
   final _formKey = GlobalKey<FormState>();
 
-  _SettingsWidgetState({@required elementDuration, @required onElementDurationCallbackSelect}){
+  _SettingsWidgetState({@required elementDuration}){
     this.elementDuration = elementDuration;
   }
 
