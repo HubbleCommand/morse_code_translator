@@ -4,9 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:morse_code_translator/controllers/audiovisual_player.dart';
 
 class AudioVisualPlayerWidget extends StatefulWidget {
-  final String morseToPlay;
   final Function onPlayCallback;
-  AudioVisualPlayerWidget({Key key, @required this.morseToPlay, @required this.onPlayCallback}) : super(key: key);
+  AudioVisualPlayerWidget({Key key, @required this.onPlayCallback}) : super(key: key);
 
   @override
   _AudioVisualPlayerWidgetState createState() => _AudioVisualPlayerWidgetState();
