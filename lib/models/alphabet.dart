@@ -35,7 +35,7 @@ abstract class Alphabet{
   }
 
   String getMorseSymbolTranslation(String morseSymbol) {
-    if(containsCharTranslation(morseSymbol)){
+    if(containsMorseSymbolTranslation(morseSymbol)){
       return alphabet.keys.firstWhere((k) => alphabet[k] == morseSymbol);
     } else {
       throw new AlphabetError('This morse string does not correspond to any known alphanumeric character');
@@ -43,6 +43,7 @@ abstract class Alphabet{
   }
 }
 
+//https://morsecode.world/international/morse.html
 class AlphabetITU extends Alphabet{
   Map<String, String> get alphabet {
     return {
