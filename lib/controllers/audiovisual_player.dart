@@ -5,17 +5,17 @@ import 'package:vibration/vibration.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:wave_generator/wave_generator.dart';
 
-class HapticPlayer{
-  List<HapticPlayerDecorator> players = List.empty(growable:true);
+class AudioVisualPlayer{
+  List<AudioVisualPlayerDecorator> players = List.empty(growable:true);
   int elementDurationMs;  //http://www.kent-engineers.com/codespeed.htm
 
-  HapticPlayer({this.elementDurationMs}){
+  AudioVisualPlayer({this.elementDurationMs}){
     if(elementDurationMs == null){
       elementDurationMs = 240;
     }
   }
 
-  void addPlayer(HapticPlayerDecorator hpDecorator){
+  void addPlayer(AudioVisualPlayerDecorator hpDecorator){
     this.players.add(hpDecorator);
   }
 
@@ -45,14 +45,14 @@ class HapticPlayer{
   }
 }
 
-abstract class HapticPlayerDecorator{
+abstract class AudioVisualPlayerDecorator{
   //void playShortTone();
   //void playLongTone();
   //void playBlankTone();
   Future<void> playTone(int duration);
 }
 
-class HapticPlayerLightDecorator extends HapticPlayerDecorator{
+class AudioVisualPlayerLightDecorator extends AudioVisualPlayerDecorator{
   @override
   Future<void> playTone(int duration) async {
     print('Flashing!');
@@ -62,7 +62,7 @@ class HapticPlayerLightDecorator extends HapticPlayerDecorator{
   }
 }
 
-class HapticPlayerVibrateDecorator extends HapticPlayerDecorator{
+class AudioVisualPlayerVibrateDecorator extends AudioVisualPlayerDecorator{
   @override
   Future<void> playTone(int duration) async {
     print('Vibrating!');
@@ -77,7 +77,7 @@ class HapticPlayerVibrateDecorator extends HapticPlayerDecorator{
   }
 }
 
-class HapticPlayerAudioDecorator extends HapticPlayerDecorator{
+class AudioVisualPlayerAudioDecorator extends AudioVisualPlayerDecorator{
   Soundpool pool = Soundpool(streamType: StreamType.notification);
 
   @override

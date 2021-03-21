@@ -5,7 +5,7 @@ Flutter mobile app that can translate text to Morse code.
 Users can type text, and translate it to:
 - Text representation of Morse Code translation
 
-As well as haptic representations:
+As well as audiovisual representations:
 - Audio beeps
 - Flashes from phone light
 - Vibrations
