@@ -40,11 +40,14 @@ class Translator {
         throw new TranslationError("Invalid symbol found");  //If char isn't valid morse symbol
       }
       if(textToTranslate[i] == ' '){
-        if(textToTranslate.substring(i, i + 2) == '   ' && textToTranslate[i + 3] != ' '){  //If is letter gap
+        if(textToTranslate.substring(i, i + 3) == _letter_gap && textToTranslate[i + 3] != ' '){  //If is letter gap
+          //In alphanumeric, there is no gap between letters of a word, so nothing to do to alphaNumericString
+          print('Letter gap');
           i += 3;
           continue;
         }
-        else if(textToTranslate.substring(i, i + 6) == '   ' && textToTranslate[i + 7] != ' '){  //If is word gap
+        else if(textToTranslate.substring(i, i + 7) == _word_gap && textToTranslate[i + 7] != ' '){  //If is word gap
+          alphaNumericString += ' ';  //Is word gap, so add space
           i += 7;
           continue;
         } else {  //Probably malformed
@@ -71,8 +74,6 @@ class Translator {
           throw new TranslationError("This morse snippet doesn't seem to match any character translation");
         }
       }
-
-      i += 1;
     }
 
     return alphaNumericString;
