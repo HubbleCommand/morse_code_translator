@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:morse_code_translator/controllers/translator.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:flutter/services.dart';
-import 'package:morse_code_translator/controllers/haptic_player.dart';
+import 'package:morse_code_translator/controllers/audiovisual_player.dart';
 
 class TranslateToMorsePage extends StatefulWidget {
   TranslateToMorsePage({Key key}) : super(key: key);
@@ -23,90 +23,57 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
   @override
   Widget build(BuildContext context) {
     print(isSelected);
+    print('Translated text: $_textTranslated');
     return Column(
       children: [
         Expanded(
           flex: 5,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child:
-              Form(
-                key: _formKey,
-                child: Column(
-                    children: <Widget>[
-                      ToggleButtons(
-                        children: <Widget>[
-                          Icon(Icons.lightbulb),
-                          Icon(Icons.vibration),
-                          Icon(Icons.audiotrack),
-                        ],
-                        onPressed: (int index) {
-                          setState(() {
-                            isSelected[index] = !isSelected[index];
-                          });
-                        },
-                        isSelected: isSelected,
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                            labelText: 'Enter the text to translate'
-                        ),
-                        inputFormatters: [morseCodeFilter],
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                        //onFieldSubmitted: (String value){_title=value;},
-                        onSaved: (value) {
-                          setState(() {
-                            _textToTranslate = value;
-                          });
-                        },
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Validate returns true if the form is valid, otherwise false.
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-
-                            setState(() {
-                              var translated = Translator.translateToMorse(_textToTranslate, AlphabetITU());
-                              print('Translated: $translated');
-                              _textTranslated = translated;
-                              print(isSelected);
-                            });
-
-                            HapticPlayer hapticPlayer = new HapticPlayer();
-
-                            if(isSelected[0]){
-                              print('Turning on light...');
-                              hapticPlayer.addPlayer(new HapticPlayerLightDecorator());
-                            }
-
-                            if(isSelected[1]){
-                              print('Turning on vibrations...');
-                              hapticPlayer.addPlayer(new HapticPlayerVibrateDecorator());
-                            }
-
-                            if(isSelected[2]){
-                              print('Turning on audio...');
-                              hapticPlayer.addPlayer(new HapticPlayerAudioDecorator());
-                            }
-
-                            //await compute(hapticPlayer.playText, _textTranslated);
-                            //compute(hapticPlayer.playText, _textTranslated);
-                            if(hapticPlayer.players.isNotEmpty){  //If there are players, play
-                              hapticPlayer.playText(_textTranslated);
-                            }
-                          }
-                        },
-                        child: Text('Translate'),
-                      ),
-                  ]
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  decoration: InputDecoration(
+                      labelText: 'Enter the text to translate'
+                  ),
+                  inputFormatters: [morseCodeFilter],
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;  //MUST RETURN NULL
+                  },
+                  //onFieldSubmitted: (String value){_title=value;},
+                  onSaved: (value) {
+                    setState(() {
+                      _textToTranslate = value;
+                    });
+                  },
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) { // Validate returns true if the form is valid, otherwise false.
+                      _formKey.currentState.save();
+
+                      try{
+                        setState(() {
+                          var translated = Translator.translateToMorse(_textToTranslate, AlphabetITU());
+                          print('Translated: $translated');
+                          _textTranslated = translated;
+                          print(isSelected);
+                        });
+                      } on TranslationError {
+                        setState(() {
+                          _textTranslated = '';
+                          print('Could not translate...');
+                        });
+                      }
+                    }
+                  },
+                  child: Text('Translate'),
+                ),
+              ]
+            ),
           ),
         ),
         Divider(thickness: 2.5),
@@ -134,7 +101,53 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                   },
                   icon: Icon(Icons.sticky_note_2, size: 18),
                   label: Text("Copy to Clipboard"),
-                )
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ToggleButtons(
+                      children: <Widget>[
+                        Icon(Icons.lightbulb),
+                        Icon(Icons.vibration),
+                        Icon(Icons.audiotrack),
+                      ],
+                      onPressed: (int index) {
+                        setState(() {
+                          isSelected[index] = !isSelected[index];
+                        });
+                      },
+                      isSelected: isSelected,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        print('Preparing to play morse with string: $_textTranslated');
+                        AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer();
+
+                        if(isSelected[0]){
+                          print('Turning on light...');
+                          audioVisualPlayer.addPlayer(new AudioVisualPlayerLightDecorator());
+                        }
+
+                        if(isSelected[1]){
+                          print('Turning on vibrations...');
+                          audioVisualPlayer.addPlayer(new AudioVisualPlayerVibrateDecorator());
+                        }
+
+                        if(isSelected[2]){
+                          print('Turning on audio...');
+                          audioVisualPlayer.addPlayer(new AudioVisualPlayerAudioDecorator());
+                        }
+
+                        //await compute(audioVisualPlayer.playText, _textTranslated);
+                        //compute(audioVisualPlayer.playText, _textTranslated);
+                        if(audioVisualPlayer.players.isNotEmpty){  //If there are players, play
+                          audioVisualPlayer.playText(_textTranslated);
+                        }
+                      },
+                      icon: Icon(Icons.play_arrow_outlined),
+                    ),
+                  ],
+                ),
               ],
             )
           ),
