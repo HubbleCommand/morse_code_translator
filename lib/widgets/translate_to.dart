@@ -5,6 +5,8 @@ import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_code_translator/controllers/audiovisual_player.dart';
 
+import 'copy_clipboard.dart';
+
 class TranslateToMorsePage extends StatefulWidget {
   TranslateToMorsePage({Key key}) : super(key: key);
 
@@ -90,17 +92,10 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                 ),
                 Text('$_textTranslated'),
-                TextButton.icon(
-                  onPressed: () async {
-                    ClipboardData data = ClipboardData(text: '$_textTranslated');
-                    await Clipboard.setData(data);
-
-                    ScaffoldMessenger
-                        .of(context)
-                        .showSnackBar(SnackBar(content: Text('Morse Code copied to clipboard')));
+                CopyToClipboardWidget(
+                  onTapCopy: (){
+                    return _textTranslated;
                   },
-                  icon: Icon(Icons.sticky_note_2, size: 18),
-                  label: Text("Copy to Clipboard"),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
