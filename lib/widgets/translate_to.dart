@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:morse_code_translator/controllers/translator.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:flutter/services.dart';
-import 'package:morse_code_translator/controllers/audiovisual_player.dart';
-
+import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'copy_clipboard.dart';
 
 class TranslateToMorsePage extends StatefulWidget {
@@ -64,10 +63,10 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                           _textTranslated = translated;
                           print(isSelected);
                         });
-                      } on TranslationError {
+                      } on TranslationError catch (e) {
                         setState(() {
                           _textTranslated = '';
-                          print('Could not translate...');
+                          print('Could not translate...' + e.cause);
                         });
                       }
                     }
@@ -97,51 +96,10 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                     return _textTranslated;
                   },
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ToggleButtons(
-                      children: <Widget>[
-                        Icon(Icons.lightbulb),
-                        Icon(Icons.vibration),
-                        Icon(Icons.audiotrack),
-                      ],
-                      onPressed: (int index) {
-                        setState(() {
-                          isSelected[index] = !isSelected[index];
-                        });
-                      },
-                      isSelected: isSelected,
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        print('Preparing to play morse with string: $_textTranslated');
-                        AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer();
-
-                        if(isSelected[0]){
-                          print('Turning on light...');
-                          audioVisualPlayer.addPlayer(new AudioVisualPlayerLightDecorator());
-                        }
-
-                        if(isSelected[1]){
-                          print('Turning on vibrations...');
-                          audioVisualPlayer.addPlayer(new AudioVisualPlayerVibrateDecorator());
-                        }
-
-                        if(isSelected[2]){
-                          print('Turning on audio...');
-                          audioVisualPlayer.addPlayer(new AudioVisualPlayerAudioDecorator());
-                        }
-
-                        //await compute(audioVisualPlayer.playText, _textTranslated);
-                        //compute(audioVisualPlayer.playText, _textTranslated);
-                        if(audioVisualPlayer.players.isNotEmpty){  //If there are players, play
-                          audioVisualPlayer.playText(_textTranslated);
-                        }
-                      },
-                      icon: Icon(Icons.play_arrow_outlined),
-                    ),
-                  ],
+                AudioVisualPlayerWidget(
+                  onPlayCallback: (){
+                    return _textTranslated;
+                  },
                 ),
               ],
             )
