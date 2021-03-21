@@ -1,3 +1,8 @@
+class AlphabetError implements Exception {
+  String cause;
+  AlphabetError(this.cause);
+}
+
 abstract class Alphabet{
   Map<String, String> alphabet = {};
 
@@ -13,7 +18,7 @@ abstract class Alphabet{
     if(containsCharTranslation(char.toLowerCase())){
       return alphabet[char.toLowerCase()];
     } else {
-      return null;
+      throw new AlphabetError('This character cannot be translated to morse');
     }
   }
 
@@ -33,7 +38,7 @@ abstract class Alphabet{
     if(containsCharTranslation(morseSymbol)){
       return alphabet.keys.firstWhere((k) => alphabet[k] == morseSymbol);
     } else {
-      return null;
+      throw new AlphabetError('This morse string does not correspond to any known alphanumeric character');
     }
   }
 }
