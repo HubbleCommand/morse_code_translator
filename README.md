@@ -12,3 +12,9 @@ As well as audiovisual representations:
 
 ## From Morse
 Simple two-button interface to type a short or long tone.
+
+## Resources
+### Callback pattern flutter
+- https://stackoverflow.com/questions/57727090/call-was-called-on-null-for-parent-callback-function-from-stateful-widget
+- https://stackoverflow.com/questions/51029655/call-method-in-one-stateful-widget-from-another-stateful-widget-flutter
+- https://stackoverflow.com/questions/52043283/how-i-can-get-data-from-other-widget
