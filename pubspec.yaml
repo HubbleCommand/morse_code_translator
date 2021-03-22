@@ -29,6 +29,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
 
+  # Ads
+  firebase_admob: ^0.9.3
+
   # Audiovisuals
   vibration: ^1.7.3
 
