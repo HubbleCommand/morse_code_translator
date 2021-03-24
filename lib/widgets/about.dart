@@ -20,6 +20,8 @@ class AboutWidget extends StatelessWidget {
           Text("""\nAudiovisual methods may not work well if you set the element duration too small.""", style: paraStyle),
           Text("""\nCopy to clipboard""", style: headerStyle),
           Text("""\nEasily use the translation results by clicking the 'Copy to clipboard' button at the bottom!""", style: paraStyle),
+          Text("""\nMorse 'Alphabets'""", style: headerStyle),
+          Text("""\nYou can choose one of the three main Morse alphabets to translate with: the original Morse code,Gerken, and the modern ITU"""),
         ],
       ),
     );
