@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AboutWidget extends StatelessWidget {
   static const TextStyle headerStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+  static const TextStyle subHeaderStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
   static const TextStyle paraStyle = TextStyle(fontSize: 15);
 
   @override
@@ -20,7 +21,10 @@ class AboutWidget extends StatelessWidget {
           Text("""\nAudiovisual methods may not work well if you set the element duration too small.""", style: paraStyle),
           Text("""\nCopy to clipboard""", style: headerStyle),
           Text("""\nEasily use the translation results by clicking the 'Copy to clipboard' button at the bottom!""", style: paraStyle),
-          Text("""\nMorse 'Alphabets'""", style: headerStyle),
+          Text("""\nSettings""" style: headerStyle),
+          Text("""\nElement duration""", style: headerStyle),
+          Text("""\nThe duration of Morse signals is defined by element duration. I.e. a dot is one element long, while a dash is three elements long. You can set how many milliseconds an element is, which can be needed if you want to use vibrations."""),
+          Text("""\nMorse 'Alphabets'""", style: subHeaderStyle),
           Text("""\nYou can choose one of the three main Morse alphabets to translate with: the original Morse code,Gerken, and the modern ITU"""),
         ],
       ),
