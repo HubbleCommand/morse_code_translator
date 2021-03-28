@@ -15,8 +15,10 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
  */
 class SettingsWidget extends StatefulWidget {
   final int elementDuration;
-  final Function onElementDurationCallbackSelect;
-  SettingsWidget({Key key, @required this.elementDuration, @required this.onElementDurationCallbackSelect}) : super(key: key);
+  final Alphabet alphabet;
+  final Function onElementDurationCallback;
+  final Function onAlphabetCallback;
+  SettingsWidget({Key key, required this.elementDuration, required this.onElementDurationCallback, required this.onAlphabetCallback}) : super(key: key);
 
   @override
   _SettingsWidgetState createState() => _SettingsWidgetState(elementDuration: elementDuration);
@@ -24,11 +26,14 @@ class SettingsWidget extends StatefulWidget {
 
 class _SettingsWidgetState extends State<SettingsWidget> {
   int elementDuration;
+  Alphabet alphabet;
+  List<bool> selectedAlphabet = [false, false, false];
 
   final _formKey = GlobalKey<FormState>();
 
-  _SettingsWidgetState({@required elementDuration}){
+  _SettingsWidgetState({required elementDuration, required alphabet}){
     this.elementDuration = elementDuration;
+    this.alphabet = alphabet;
   }
 
   @override
@@ -61,11 +66,34 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   });
                 },
               ),
+              ToggleButtons(
+                children: <Widget>[
+                  Icon(Text(AlphabetITU().name)),
+                  Icon(Text(AlphabetOriginal().name)),
+                  Icon(Text(AlphabetGerke().name)),
+                ],
+                onPressed: (int index) {
+                  setState(() {
+                    selectedAlphabet[index] = !selectedAlphabet[index];
+                    switch(index) {
+                      case 0 : {alphabet = AlphabetITU();}
+                      break;
+                      case 1 : {alphabet = AlphabetOriginal();}
+                      break;
+                      case 2 : {alphabet = AlphabetGerke();}
+                      break;
+                      default : {alphabet = AlphabetITU();}
+                      break;
+                    }
+                  });
+                },
+                selectedAlphabet: selectedAlphabet,
+              ),
               ElevatedButton(
                 onPressed: (){
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
-                    widget.onElementDurationCallbackSelect(elementDuration);
+                    widget.onElementDurationCallback(elementDuration);
                   }
                 },
                 child: Text('Apply'),
