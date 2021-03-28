@@ -94,6 +94,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     widget.onElementDurationCallback(elementDuration);
+                    widget.onAlphabetCallback(alphabet);
                   }
                 },
                 child: Text('Apply'),
