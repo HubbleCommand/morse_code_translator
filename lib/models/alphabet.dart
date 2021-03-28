@@ -5,6 +5,7 @@ class AlphabetError implements Exception {
 
 abstract class Alphabet{
   Map<String, String> alphabet = {};
+  String name;
 
   bool containsCharTranslation(String char){
     if(alphabet.containsKey(char.toLowerCase())){
@@ -45,6 +46,10 @@ abstract class Alphabet{
 
 //https://morsecode.world/international/morse.html
 class AlphabetITU extends Alphabet{
+  String get name {
+    return 'ITU';
+  }
+  
   Map<String, String> get alphabet {
     return {
       'a' : '.-',
@@ -88,6 +93,10 @@ class AlphabetITU extends Alphabet{
 }
 
 class AlphabetOriginal extends Alphabet{
+  String get name {
+    return 'Original';
+  }
+  
   Map<String, String> get alphabet {
     return {
       'a': '.-',
@@ -131,6 +140,10 @@ class AlphabetOriginal extends Alphabet{
 }
 
 class AlphabetGerke extends Alphabet{
+  String get name {
+    return 'Gerke';
+  }
+  
   Map<String, String> get alphabet {
     return {
       'a': '.-',
