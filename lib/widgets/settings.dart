@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //typedef ElementDurationCallback = void Function(int elementDuration);
 
@@ -90,11 +91,15 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 selectedAlphabet: selectedAlphabet,
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     widget.onElementDurationCallback(elementDuration);
                     widget.onAlphabetCallback(alphabet);
+                    
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setInt('elementDuration', elementDuration);
+                    prefs.setString('alphabet', alphabet.name);
                   }
                 },
                 child: Text('Apply'),
