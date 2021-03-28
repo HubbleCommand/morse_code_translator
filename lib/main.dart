@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:morse_code_translator/widgets/about.dart';
 import 'package:morse_code_translator/widgets/settings.dart';
 import 'package:morse_code_translator/widgets/translate_from.dart';
@@ -46,7 +48,28 @@ class _MCTHomePageState extends State<MCTHomePage> {
     TranslateFromMorsePage(),
   ];
 
-  int elementDuration = 240;
+  //int elementDuration = 240;
+  int elementDuration;
+  Alphabet alphabet;
+
+  _MCTHomePageState() async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    elementDuration = prefs.getInt('elementDuration') ?? 240;
+
+    String chosenAlphabet = prefs.getString('alphabet') ?? 'ITU';
+
+    switch(chosenAlphabet){
+      case 'ITU' : {alphabet = AlphabetITU();}
+      break;
+      case 'Original' : {alphabet = AlphabetOriginal();}
+      break;
+      case 'Gerke' : {alphabet = AlphabetGerke();}
+      break;
+      default : {alphabet = AlphabetITU();}
+      break;
+    }
+  }
 
   void onTabTapped(int index) {
     setState(() {
@@ -83,12 +106,21 @@ class _MCTHomePageState extends State<MCTHomePage> {
                     builder: (BuildContext context){
                       return AlertDialog(
                         title: Text('App Settings'),
-                        content: SettingsWidget(elementDuration: elementDuration, onElementDurationCallbackSelect: (int elementDuration){
-                          print(elementDuration);
-                          setState(() {
-                            this.elementDuration = elementDuration;
-                          });
-                        },),
+                        content: SettingsWidget(
+                          elementDuration: elementDuration, 
+                          onElementDurationCallbackSelect: (int elementDuration){
+                            print(elementDuration);
+                            setState(() {
+                              this.elementDuration = elementDuration;
+                            });
+                          },
+                          onAlphabetCallback : (Alphabet alphabet) {
+                            print(alphabet.name);
+                            setState(() {
+                              this.alphabet = alphabet;
+                            });
+                          }
+                        ),
                       );
                     }
                 );
