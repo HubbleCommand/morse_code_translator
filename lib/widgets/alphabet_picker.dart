@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:morse_code_translator/models/alphabet.dart';
 
 class AlphabetPickerWidget extends StatefulWidget {
   final Function onAlphabetPickedCallback;
@@ -13,14 +14,14 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
   //TODO make more dynamic
   List<Alphabet> alphabets = [AlphabetOriginal(), AlphabetITU(), AlphabetGerke()];
   //List<bool> isSelected = [false, false, false];
-  List<bool> isSelected = List.filled(alphabets.length, false);
+  List<bool> isSelected = List.filled(3, false);
 
   _buildButtons(alphabets){
     List<Widget> alphabetButtons;
     
-    for(alphabet in alphabets) {
+    for(Alphabet alphabet in alphabets) {
       String alphabetName = alphabet.name;
-      alphabetButtons.add(Text('$alphabetName');
+      alphabetButtons.add(Text('$alphabetName'));
     }
     
     return alphabetButtons;
@@ -42,7 +43,7 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
           onPressed: (int index) {
             setState(() {
               isSelected[index] = !isSelected[index];
-              onAlphabetPickedCallback(alphabets[index]);
+              widget.onAlphabetPickedCallback(alphabets[index]);
             });
           },
           isSelected: isSelected,

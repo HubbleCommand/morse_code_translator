@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //typedef ElementDurationCallback = void Function(int elementDuration);
@@ -19,10 +20,10 @@ class SettingsWidget extends StatefulWidget {
   final Alphabet alphabet;
   final Function onElementDurationCallback;
   final Function onAlphabetCallback;
-  SettingsWidget({Key key, required this.elementDuration, required this.onElementDurationCallback, required this.onAlphabetCallback}) : super(key: key);
+  SettingsWidget({Key key, @required this.elementDuration, @required this.alphabet, @required this.onElementDurationCallback, @required this.onAlphabetCallback}) : super(key: key);
 
   @override
-  _SettingsWidgetState createState() => _SettingsWidgetState(elementDuration: elementDuration);
+  _SettingsWidgetState createState() => _SettingsWidgetState(elementDuration: elementDuration, alphabet: alphabet);
 }
 
 class _SettingsWidgetState extends State<SettingsWidget> {
@@ -32,7 +33,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
   final _formKey = GlobalKey<FormState>();
 
-  _SettingsWidgetState({required elementDuration, required alphabet}){
+  _SettingsWidgetState({@required elementDuration, @required alphabet}){
     this.elementDuration = elementDuration;
     this.alphabet = alphabet;
   }
@@ -69,9 +70,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               ),
               ToggleButtons(
                 children: <Widget>[
-                  Icon(Text(AlphabetITU().name)),
-                  Icon(Text(AlphabetOriginal().name)),
-                  Icon(Text(AlphabetGerke().name)),
+                  Text(AlphabetITU().name),
+                  Text(AlphabetOriginal().name),
+                  Text(AlphabetGerke().name),
                 ],
                 onPressed: (int index) {
                   setState(() {
@@ -88,7 +89,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     }
                   });
                 },
-                selectedAlphabet: selectedAlphabet,
+                isSelected: selectedAlphabet,
               ),
               ElevatedButton(
                 onPressed: () async {

@@ -21,7 +21,7 @@ class AboutWidget extends StatelessWidget {
           Text("""\nAudiovisual methods may not work well if you set the element duration too small.""", style: paraStyle),
           Text("""\nCopy to clipboard""", style: headerStyle),
           Text("""\nEasily use the translation results by clicking the 'Copy to clipboard' button at the bottom!""", style: paraStyle),
-          Text("""\nSettings""" style: headerStyle),
+          Text("""\nSettings""", style: headerStyle),
           Text("""\nElement duration""", style: headerStyle),
           Text("""\nThe duration of Morse signals is defined by element duration. I.e. a dot is one element long, while a dash is three elements long. You can set how many milliseconds an element is, which can be needed if you want to use vibrations."""),
           Text("""\nMorse 'Alphabets'""", style: subHeaderStyle),
