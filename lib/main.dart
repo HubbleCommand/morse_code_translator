@@ -79,6 +79,11 @@ class _MCTHomePageState extends State<MCTHomePage> {
         default : {this.alphabet = AlphabetITU();}
         break;
       }
+
+      this._children = [
+        TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+        TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+      ];
     });
   }
 
@@ -124,12 +129,20 @@ class _MCTHomePageState extends State<MCTHomePage> {
                             print(elementDuration);
                             setState(() {
                               this.elementDuration = elementDuration;
+                              this._children = [
+                                TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+                                TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+                              ];
                             });
                           },
                           onAlphabetCallback : (Alphabet alphabet) {
                             print(alphabet.name);
                             setState(() {
                               this.alphabet = alphabet;
+                              this._children = [
+                                TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+                                TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+                              ];
                             });
                           }
                         ),
