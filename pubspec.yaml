@@ -30,18 +30,14 @@ dependencies:
   cupertino_icons: ^1.0.1
 
   # Ads
-  firebase_admob: ^0.9.3
-  google_mobile_ads: ^0.11.0+4
+  google_mobile_ads: ^0.12.0
 
   # Storing settings
   shared_preferences: ^2.0.5
 
   # Audiovisuals
   vibration: ^1.7.3
-
-  #torch_compat: ^1.0.2 # Doesn't seem to work...
   flashlight: ^0.1.1
-
   soundpool: ^1.1.3
   wave_generator: ^0.1.0
 
