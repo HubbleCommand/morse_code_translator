@@ -154,7 +154,7 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
                       print('Trying to translate: "$_textToTranslate"');
                       try{
                         setState(() {
-                          var translated = Translator.translateFromMorse(_textToTranslate, AlphabetITU());
+                          var translated = Translator.translateFromMorse(_textToTranslate, widget.alphabet);
                           print('Translated: $translated');
                           _textTranslated = translated;
                         });

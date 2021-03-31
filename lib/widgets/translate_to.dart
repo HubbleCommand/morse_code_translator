@@ -56,12 +56,13 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        print(widget.alphabet.name);
                         if (_formKey.currentState.validate()) { // Validate returns true if the form is valid, otherwise false.
                           _formKey.currentState.save();
 
                           try{
                             setState(() {
-                              var translated = Translator.translateToMorse(_textToTranslate, AlphabetITU());
+                              var translated = Translator.translateToMorse(_textToTranslate, widget.alphabet);
                               print('Translated: $translated');
                               _textTranslated = translated;
                               print(isSelected);
