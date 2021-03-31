@@ -43,6 +43,25 @@ class AudioVisualPlayer{
       }
     }
   }
+
+  Future<void> playTone(String toneToPlay) async {
+    if(toneToPlay == ' '){
+      print('Got to space');
+      await Future.delayed(Duration(milliseconds:elementDurationMs)); //https://stackoverflow.com/questions/18449846/how-can-i-sleep-a-dart-program
+    } else {
+      var futures = <Future>[];
+      players.forEach((player) {
+        if(toneToPlay == '.'){
+          print('Got to short');
+          futures.add(player.playTone(elementDurationMs));
+        } else if(toneToPlay == '-'){
+          print('Got to long');
+          futures.add(player.playTone(elementDurationMs*3));
+        }
+      });
+      await Future.wait(futures);
+    }
+  }
 }
 
 abstract class AudioVisualPlayerDecorator{

@@ -15,6 +15,17 @@ class AudioVisualPlayerWidget extends StatefulWidget {
 class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
   List<bool> isSelected = [false, false, false];
 
+  bool isPlaying = false;
+
+  final IconData iconPlay = Icons.play_circle_fill_outlined;
+  final IconData iconStop = Icons.stop_circle_outlined;
+
+  IconData iconData;
+
+  _AudioVisualPlayerWidgetState(){
+    iconData = iconPlay;
+  }
+
   final FilteringTextInputFormatter morseCodeFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
 
   @override
@@ -23,6 +34,8 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ToggleButtons(
+          renderBorder: false,
+          borderRadius: BorderRadius.circular((20)),
           children: <Widget>[
             Icon(Icons.lightbulb),
             Icon(Icons.vibration),
@@ -36,33 +49,63 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
           isSelected: isSelected,
         ),
         IconButton(
-          onPressed: () {
-            String morseToPlay = widget.onPlayCallback();
-            print('Preparing to play morse with string: $morseToPlay');
-            AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer(elementDurationMs: widget.elementDuration);
+          onPressed: () async {
+            if(isPlaying) {
+              print('It appears that the tune is playing, stopping...');
+              setState(() {
+                isPlaying = false;
+                iconData = iconPlay;
+              });
+            } else {
+              String morseToPlay = widget.onPlayCallback();
+              print('Preparing to play morse with string: $morseToPlay');
+              if(morseToPlay.isEmpty) {
+                ScaffoldMessenger
+                    .of(context)
+                    .showSnackBar(SnackBar(content: Text('Please translate some text')));
+                return;
+              }
 
-            if(isSelected[0]){
-              print('Turning on light...');
-              audioVisualPlayer.addPlayer(new AudioVisualPlayerLightDecorator());
-            }
+              AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer(elementDurationMs: widget.elementDuration);
 
-            if(isSelected[1]){
-              print('Turning on vibrations...');
-              audioVisualPlayer.addPlayer(new AudioVisualPlayerVibrateDecorator());
-            }
+              if(isSelected[0]){
+                print('Turning on light...');
+                audioVisualPlayer.addPlayer(new AudioVisualPlayerLightDecorator());
+              }
 
-            if(isSelected[2]){
-              print('Turning on audio...');
-              audioVisualPlayer.addPlayer(new AudioVisualPlayerAudioDecorator());
-            }
+              if(isSelected[1]){
+                print('Turning on vibrations...');
+                audioVisualPlayer.addPlayer(new AudioVisualPlayerVibrateDecorator());
+              }
 
-            //await compute(audioVisualPlayer.playText, _textTranslated);
-            //compute(audioVisualPlayer.playText, _textTranslated);
-            if(audioVisualPlayer.players.isNotEmpty){  //If there are players, play
-              audioVisualPlayer.playText(morseToPlay);
+              if(isSelected[2]){
+                print('Turning on audio...');
+                audioVisualPlayer.addPlayer(new AudioVisualPlayerAudioDecorator());
+              }
+
+              //await compute(audioVisualPlayer.playText, _textTranslated);
+              //compute(audioVisualPlayer.playText, _textTranslated);
+              if(audioVisualPlayer.players.isNotEmpty ){  //If there are players, play
+                setState(() {
+                  isPlaying = true;
+                  iconData = iconStop;
+                });
+
+                for(int i = 0; i < morseToPlay.length; i++){
+                  if(this.isPlaying){
+                    await audioVisualPlayer.playTone(morseToPlay[i]);
+                  } else {
+                    break;  //Quits when isPlaying is set to false elsewhere in the app!
+                  }
+                }
+              } else {
+                ScaffoldMessenger
+                    .of(context)
+                    .showSnackBar(SnackBar(content: Text('Please select a method to play')));
+              }
             }
           },
-          icon: Icon(Icons.play_arrow_outlined),
+          icon: Icon(iconData),
         ),
       ],
     );
