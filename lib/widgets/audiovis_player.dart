@@ -5,7 +5,8 @@ import 'package:morse_code_translator/controllers/audiovisual_player.dart';
 
 class AudioVisualPlayerWidget extends StatefulWidget {
   final Function onPlayCallback;
-  AudioVisualPlayerWidget({Key key, @required this.onPlayCallback}) : super(key: key);
+  final int elementDuration;
+  AudioVisualPlayerWidget({Key key, @required this.onPlayCallback, @required this.elementDuration}) : super(key: key);
 
   @override
   _AudioVisualPlayerWidgetState createState() => _AudioVisualPlayerWidgetState();
@@ -38,7 +39,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
           onPressed: () {
             String morseToPlay = widget.onPlayCallback();
             print('Preparing to play morse with string: $morseToPlay');
-            AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer();
+            AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer(elementDurationMs: widget.elementDuration);
 
             if(isSelected[0]){
               print('Turning on light...');
