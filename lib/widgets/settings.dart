@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
+import 'package:morse_code_translator/widgets/alphabet_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //typedef ElementDurationCallback = void Function(int elementDuration);
@@ -81,7 +82,18 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   });
                 },
               ),
+              AlphabetPickerWidget(
+                  onAlphabetPickedCallback: (Alphabet alphabet){
+                    setState(() {
+                      this.alphabet = alphabet;
+                    });
+                  },
+                  alphabetName: alphabet.name
+              ),
+              /*
               ToggleButtons(
+                renderBorder: false,
+                constraints: BoxConstraints(minWidth: 75.0, minHeight: 48.0),
                 children: <Widget>[
                   Text(AlphabetITU().name),
                   Text(AlphabetOriginal().name),
@@ -110,7 +122,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   });
                 },
                 isSelected: selectedAlphabet,
-              ),
+              ),*/
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {

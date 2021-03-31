@@ -27,11 +27,19 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
   }
 
   _buildButtons(alphabets){
-    List<Widget> alphabetButtons;
+    List<Widget> alphabetButtons = [];
     
     for(Alphabet alphabet in alphabets) {
       String alphabetName = alphabet.name;
-      alphabetButtons.add(Text('$alphabetName'));
+      alphabetButtons.add(
+        Padding(
+          padding: EdgeInsets.all(20),
+          child:Text(
+              '$alphabetName',
+              //style: TextStyle(fontSize: 22)
+          )
+        ),
+      );
     }
     
     return alphabetButtons;
@@ -44,16 +52,12 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ToggleButtons(
-          /*children: <Widget>[
-            Text('Original),
-            Text('ITU'),
-            Text('Gerke'),
-          ],*/
+          borderRadius: BorderRadius.circular((20)),
+          renderBorder: false,
           children: _buildButtons(alphabets),
           onPressed: (int index) {
             setState(() {
               //isSelected[index] = !isSelected[index];
-              //widget.onAlphabetPickedCallback(alphabets[index]);
               for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++) {
                 if (buttonIndex == index) {
                   isSelected[buttonIndex] = true;
