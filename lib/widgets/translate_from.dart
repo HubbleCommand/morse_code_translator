@@ -8,7 +8,10 @@ import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/copy_clipboard.dart';
 
 class TranslateFromMorsePage extends StatefulWidget {
-  TranslateFromMorsePage({Key key}) : super(key: key);
+  final int elementDuration;
+  final Alphabet alphabet;
+
+  TranslateFromMorsePage({Key key, this.elementDuration, this.alphabet}) : super(key: key);
 
   @override
   _TranslateFromMorsePageState createState() => _TranslateFromMorsePageState();
@@ -70,7 +73,7 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    OutlineButton(
+                    OutlinedButton(
                       onPressed: (){
                         var start = textEditingController.selection.start;
                         print('TEC Selection: $start');
@@ -99,7 +102,7 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
                       },
                       child: Text('.'),
                     ),
-                    OutlineButton(
+                    OutlinedButton(
                       onPressed: (){
                         int currentCursorPosition = textEditingController.selection.start;
 
@@ -111,7 +114,7 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
                       },
                       child: Text('-'),
                     ),
-                    OutlineButton(
+                    OutlinedButton(
                       onPressed: (){
                         int currentCursorPosition = textEditingController.selection.start;
 
@@ -124,7 +127,7 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
                       },
                       child: Text("CHAR SPACE"),
                     ),
-                    OutlineButton(
+                    OutlinedButton(
                       onPressed: (){
                         int currentCursorPosition = textEditingController.selection.start;
 
@@ -167,6 +170,7 @@ class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
                   child: Text('Translate'),
                 ),
                 AudioVisualPlayerWidget(
+                  elementDuration: widget.elementDuration,
                   onPlayCallback: (){
                     print('Calling with text $_textToTranslate');
                     return _textToTranslate;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:morse_code_translator/widgets/banner_ad.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:morse_code_translator/widgets/about.dart';
@@ -6,7 +8,12 @@ import 'package:morse_code_translator/widgets/settings.dart';
 import 'package:morse_code_translator/widgets/translate_from.dart';
 import 'package:morse_code_translator/widgets/translate_to.dart';
 
+import 'models/alphabet.dart';
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
   runApp(MorseCodeTranslatorApp());
 }
 
@@ -43,32 +50,36 @@ class MCTHomePage extends StatefulWidget {
 
 class _MCTHomePageState extends State<MCTHomePage> {
   int _currentIndex = 0;
-  final List<Widget> _children = [
-    TranslateToMorsePage(),
-    TranslateFromMorsePage(),
-  ];
-
-  //int elementDuration = 240;
-  int elementDuration;
+  int elementDuration;  //int elementDuration = 240;
   Alphabet alphabet;
+  List<Widget> _children; //Shouldn't be final, as the widgets may change (? won't they just be rebuilt? Whatever...)
 
-  _MCTHomePageState() async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    elementDuration = prefs.getInt('elementDuration') ?? 240;
+  _MCTHomePageState(){
+    this._children = [
+      TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+      TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
+    ];
+  }
 
-    String chosenAlphabet = prefs.getString('alphabet') ?? 'ITU';
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      this.elementDuration = prefs.getInt('elementDuration') ?? 240;
 
-    switch(chosenAlphabet){
-      case 'ITU' : {alphabet = AlphabetITU();}
-      break;
-      case 'Original' : {alphabet = AlphabetOriginal();}
-      break;
-      case 'Gerke' : {alphabet = AlphabetGerke();}
-      break;
-      default : {alphabet = AlphabetITU();}
-      break;
-    }
+      //String chosenAlphabet = prefs.getString('alphabet') ?? 'ITU';
+
+      switch(prefs.getString('alphabet') ?? 'ITU'){
+        case 'ITU' : {this.alphabet = AlphabetITU();}
+        break;
+        case 'Original' : {this.alphabet = AlphabetOriginal();}
+        break;
+        case 'Gerke' : {this.alphabet = AlphabetGerke();}
+        break;
+        default : {this.alphabet = AlphabetITU();}
+        break;
+      }
+    });
   }
 
   void onTabTapped(int index) {
@@ -107,8 +118,9 @@ class _MCTHomePageState extends State<MCTHomePage> {
                       return AlertDialog(
                         title: Text('App Settings'),
                         content: SettingsWidget(
-                          elementDuration: elementDuration, 
-                          onElementDurationCallbackSelect: (int elementDuration){
+                          alphabet: this.alphabet,
+                          elementDuration: this.elementDuration,
+                          onElementDurationCallback: (int elementDuration){
                             print(elementDuration);
                             setState(() {
                               this.elementDuration = elementDuration;
@@ -127,7 +139,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
               })
         ],
       ),
-      body: _children[_currentIndex],
+      body: Column(
+        children: [
+          BannerAdWidget(),
+          _children[_currentIndex],
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: onTabTapped,
