@@ -34,8 +34,21 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   final _formKey = GlobalKey<FormState>();
 
   _SettingsWidgetState({@required elementDuration, @required alphabet}){
-    this.elementDuration = elementDuration;
-    this.alphabet = alphabet;
+    this.elementDuration = elementDuration ?? 240;
+    this.alphabet = alphabet ?? AlphabetITU();
+    switch(alphabet.name){
+      case 'ITU':
+        selectedAlphabet[0] = true;
+      break;
+      case 'Original':
+        selectedAlphabet[1] = true;
+      break;
+      case 'Gerke':
+        selectedAlphabet[2] = true;
+      break;
+      default:
+      break;
+    }
   }
 
   @override
@@ -76,7 +89,14 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 ],
                 onPressed: (int index) {
                   setState(() {
-                    selectedAlphabet[index] = !selectedAlphabet[index];
+                    for (int buttonIndex = 0; buttonIndex < selectedAlphabet.length; buttonIndex++) {
+                      if (buttonIndex == index) {
+                        selectedAlphabet[buttonIndex] = true;
+                      } else {
+                        selectedAlphabet[buttonIndex] = false;
+                      }
+                    }
+
                     switch(index) {
                       case 0 : {alphabet = AlphabetITU();}
                       break;
