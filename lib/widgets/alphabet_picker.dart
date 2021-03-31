@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
 
 class AlphabetPickerWidget extends StatefulWidget {
   final Function onAlphabetPickedCallback;
-  AlphabetPickerWidget({Key key, @required this.onAlphabetPickedCallback}) : super(key: key);
+  final String alphabetName;
+  AlphabetPickerWidget({Key key, @required this.onAlphabetPickedCallback, @required this.alphabetName}) : super(key: key);
 
   @override
-  _AlphabetPickerWidgetState createState() => _AlphabetPickerWidgetState();
+  _AlphabetPickerWidgetState createState() => _AlphabetPickerWidgetState(alphabetName: alphabetName);
 }
 
 class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
-  //TODO make more dynamic
+  List<bool> isSelected;
   List<Alphabet> alphabets = [AlphabetOriginal(), AlphabetITU(), AlphabetGerke()];
-  //List<bool> isSelected = [false, false, false];
-  List<bool> isSelected = List.filled(3, false);
+
+  _AlphabetPickerWidgetState({@required alphabetName}){
+    isSelected = List.filled(alphabets.length, false);
+
+    if(alphabets.length == isSelected.length){
+      for(int index = 0; index < alphabets.length; index++){
+        if(alphabets[index].name == alphabetName){
+          isSelected[index] = true;
+        }
+      }
+    }
+  }
 
   _buildButtons(alphabets){
     List<Widget> alphabetButtons;
@@ -42,7 +52,15 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
           children: _buildButtons(alphabets),
           onPressed: (int index) {
             setState(() {
-              isSelected[index] = !isSelected[index];
+              //isSelected[index] = !isSelected[index];
+              //widget.onAlphabetPickedCallback(alphabets[index]);
+              for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++) {
+                if (buttonIndex == index) {
+                  isSelected[buttonIndex] = true;
+                } else {
+                  isSelected[buttonIndex] = false;
+                }
+              }
               widget.onAlphabetPickedCallback(alphabets[index]);
             });
           },
