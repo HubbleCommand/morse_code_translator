@@ -103,7 +103,7 @@ class AudioVisualPlayerAudioDecorator extends AudioVisualPlayerDecorator{
         /* waveform */ Waveform.Square, //Square works best for quick responses to DOT s
         /* volume */ 0.5);
 
-    List<int> bytes = List<int>();
+    List<int> bytes = [];
     await for (int byte in generator.generate(note)) {
       bytes.add(byte);
     }
