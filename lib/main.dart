@@ -50,8 +50,8 @@ class MCTHomePage extends StatefulWidget {
 
 class _MCTHomePageState extends State<MCTHomePage> {
   int _currentIndex = 0;
-  int elementDuration;  //int elementDuration = 240;
-  Alphabet alphabet;
+  int elementDuration = 240;  //int elementDuration = 240;
+  Alphabet alphabet = AlphabetITU(); //Need default values...
   List<Widget> _children; //Shouldn't be final, as the widgets may change (? won't they just be rebuilt? Whatever...)
 
   _MCTHomePageState(){
