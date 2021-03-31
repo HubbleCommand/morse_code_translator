@@ -35,7 +35,9 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.hubblecommand.morse_code_translator"
-        minSdkVersion 16
+        //minSdkVersion 16
+        //minSdkVersion 19 // for google admob
+        minSdkVersion 21 //for .dex 64k methods issue   https://stackoverflow.com/questions/51489049/flutter-project-exceeds-dex-method-reference-count-limit
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
