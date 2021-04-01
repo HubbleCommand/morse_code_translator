@@ -4,18 +4,6 @@ import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:morse_code_translator/widgets/alphabet_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//typedef ElementDurationCallback = void Function(int elementDuration);
-
-/*
-class TranslateFromMorsePage extends StatefulWidget {
-  TranslateFromMorsePage({Key key}) : super(key: key);
-
-  @override
-  _TranslateFromMorsePageState createState() => _TranslateFromMorsePageState();
-}
-
-class _TranslateFromMorsePageState extends State<TranslateFromMorsePage> {
- */
 class SettingsWidget extends StatefulWidget {
   final int elementDuration;
   final Alphabet alphabet;
@@ -90,39 +78,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   },
                   alphabetName: alphabet.name
               ),
-              /*
-              ToggleButtons(
-                renderBorder: false,
-                constraints: BoxConstraints(minWidth: 75.0, minHeight: 48.0),
-                children: <Widget>[
-                  Text(AlphabetITU().name),
-                  Text(AlphabetOriginal().name),
-                  Text(AlphabetGerke().name),
-                ],
-                onPressed: (int index) {
-                  setState(() {
-                    for (int buttonIndex = 0; buttonIndex < selectedAlphabet.length; buttonIndex++) {
-                      if (buttonIndex == index) {
-                        selectedAlphabet[buttonIndex] = true;
-                      } else {
-                        selectedAlphabet[buttonIndex] = false;
-                      }
-                    }
-
-                    switch(index) {
-                      case 0 : {alphabet = AlphabetITU();}
-                      break;
-                      case 1 : {alphabet = AlphabetOriginal();}
-                      break;
-                      case 2 : {alphabet = AlphabetGerke();}
-                      break;
-                      default : {alphabet = AlphabetITU();}
-                      break;
-                    }
-                  });
-                },
-                isSelected: selectedAlphabet,
-              ),*/
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
