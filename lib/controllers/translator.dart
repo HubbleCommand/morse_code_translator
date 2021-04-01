@@ -1,7 +1,5 @@
 import 'package:morse_code_translator/models/alphabet.dart';
 
-//https://en.wikipedia.org/wiki/Morse_code
-
 class TranslationError implements Exception {
   String cause;
   TranslationError(this.cause);
@@ -15,10 +13,11 @@ class Translator {
   static String translateToMorse(String textToTranslate, Alphabet alphabet){
     String morseString = '';
 
+    textToTranslate = textToTranslate.trim();
     for(int i = 0; i < textToTranslate.length; i++){
       if(alphabet.containsCharTranslation(textToTranslate[i])){
         try{
-          morseString += alphabet.getCharTranslation(textToTranslate[i]) + _letter_gap;
+          morseString += alphabet.getCharTranslation(textToTranslate[i]) + ((i == textToTranslate.length - 1) ? '' : _letter_gap);
         } on AlphabetError{
           throw new TranslationError("No morse translation found for this character");  //If char isn't valid morse symbol
         }
@@ -34,6 +33,8 @@ class Translator {
 
   static String translateFromMorse(String textToTranslate, Alphabet alphabet){
     String alphaNumericString = '';
+
+    textToTranslate = textToTranslate.trim();
     for(int i = 0; i < textToTranslate.length;){
       if(!(textToTranslate[i] == '.' || textToTranslate[i] =='-' || textToTranslate[i] ==' ')){
         print(textToTranslate[i]);
@@ -50,7 +51,9 @@ class Translator {
           alphaNumericString += ' ';  //Is word gap, so add space
           i += 7;
           continue;
-        } else {  //Probably malformed
+        }
+        else {  //Probably malformed
+          // TODO handle if the duration between identical symbols is 1 instead of 3
           throw new TranslationError("Malformed space");  //If char isn't valid morse symbol
         }
       } else {
