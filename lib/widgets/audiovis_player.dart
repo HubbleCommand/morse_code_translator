@@ -92,12 +92,18 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
                 });
 
                 for(int i = 0; i < morseToPlay.length; i++){
-                  if(this.isPlaying){
+                  if(this.isPlaying && this.mounted){
                     await audioVisualPlayer.playTone(morseToPlay[i]);
                   } else {
                     break;  //Quits when isPlaying is set to false elsewhere in the app!
                   }
                 }
+
+                //Need to reset
+                setState(() {
+                  isPlaying = false;
+                  iconData = iconPlay;
+                });
               } else {
                 ScaffoldMessenger
                     .of(context)
