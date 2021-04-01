@@ -14,6 +14,12 @@ As well as audiovisual representations:
 Simple two-button interface to type a short or long tone.
 
 ## Resources
+### Morse Code
+- https://www.codebug.org.uk/learn/step/541/morse-code-timing-rules/
+- https://morsecode.world/international/timing.html
+- http://www.kent-engineers.com/codespeed.htm
+- https://en.wikipedia.org/wiki/Morse_code
+
 ### Callback pattern flutter
 - https://stackoverflow.com/questions/57727090/call-was-called-on-null-for-parent-callback-function-from-stateful-widget
 - https://stackoverflow.com/questions/51029655/call-method-in-one-stateful-widget-from-another-stateful-widget-flutter
