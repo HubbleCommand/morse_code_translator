@@ -27,74 +27,91 @@ class _TranslateToMorsePageState extends State<TranslateToMorsePage> {
   Widget build(BuildContext context) {
     print(isSelected);
     print('Translated text: $_textTranslated');
+    //https://api.flutter.dev/flutter/widgets/Expanded-class.html
     return Expanded(
       child: Column(
         children: [
           Expanded(
             flex: 5,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      decoration: InputDecoration(
-                          labelText: 'Enter the text to translate'
-                      ),
-                      inputFormatters: [morseCodeFilter],
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;  //MUST RETURN NULL
-                      },
-                      //onFieldSubmitted: (String value){_title=value;},
-                      onSaved: (value) {
-                        setState(() {
-                          _textToTranslate = value;
-                        });
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        print(widget.alphabet.name);
-                        if (_formKey.currentState.validate()) { // Validate returns true if the form is valid, otherwise false.
-                          _formKey.currentState.save();
-
-                          try{
-                            setState(() {
-                              var translated = Translator.translateToMorse(_textToTranslate, widget.alphabet);
-                              print('Translated: $translated');
-                              _textTranslated = translated;
-                              print(isSelected);
-                            });
-                          } on TranslationError catch (e) {
-                            setState(() {
-                              _textTranslated = '';
-                              print('Could not translate...' + e.cause);
-                            });
-                          }
-                        }
-                      },
-                      child: Text('Translate'),
-                    ),
-                  ]
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white/*.withOpacity(0.5)*/,
+                  borderRadius: BorderRadius.circular(5)
               ),
-            ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        decoration: InputDecoration(
+                            labelText: 'Enter the text to translate'
+                        ),
+                        inputFormatters: [morseCodeFilter],
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;  //MUST RETURN NULL
+                        },
+                        //onFieldSubmitted: (String value){_title=value;},
+                        onSaved: (value) {
+                          setState(() {
+                            _textToTranslate = value;
+                          });
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          print(widget.alphabet.name);
+                          if (_formKey.currentState.validate()) { // Validate returns true if the form is valid, otherwise false.
+                            _formKey.currentState.save();
+
+                            try{
+                              setState(() {
+                                var translated = Translator.translateToMorse(_textToTranslate, widget.alphabet);
+                                print('Translated: $translated');
+                                _textTranslated = translated;
+                                print(isSelected);
+                              });
+                            } on TranslationError catch (e) {
+                              setState(() {
+                                _textTranslated = '';
+                                print('Could not translate...' + e.cause);
+                              });
+                            }
+                          }
+                        },
+                        child: Text('Translate'),
+                      ),
+                    ]
+                ),
+              ),
+            )
           ),
-          Divider(thickness: 2.5),
+          //Divider(thickness: 2.5),
           Expanded(
             flex: 5,
             child: Container(
               // this container won't be larger than
               // half of its parent size
+                /*decoration: BoxDecoration(
+                    color: Colors.blueAccent/*.withOpacity(0.5)*/,
+                    borderRadius: BorderRadius.circular(5)
+                ),*/
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    /*Text(
                       'Translation',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                    ),*/
+                    Padding(
+                        padding: EdgeInsets.all(10),
+                        child:Text(
+                          '$_textTranslated',
+                          style: TextStyle(color: Colors.black),
+                        ),
                     ),
-                    Text('$_textTranslated'),
                     CopyToClipboardWidget(
                       onTapCopy: (){
                         return _textTranslated;
