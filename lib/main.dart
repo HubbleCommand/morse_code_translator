@@ -286,8 +286,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildTranslateToAlphaButton(Orientation.landscape),
-                  _buildTranslateToMorseButton(Orientation.landscape),
+                  _buildTranslateToAlphaButton(Orientation.portrait),
+                  _buildTranslateToMorseButton(Orientation.portrait),
                 ],
               ),
               Expanded(child: Row(
