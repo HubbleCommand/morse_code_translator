@@ -6,7 +6,7 @@ import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/banner_ad.dart';
 import 'package:morse_code_translator/widgets/copy_clipboard.dart';
-import 'package:morse_code_translator/widgets/morse_field.dart';
+import 'package:morse_code_translator/widgets/morse_keyboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:morse_code_translator/widgets/about.dart';
 import 'package:morse_code_translator/widgets/settings.dart';
@@ -52,10 +52,8 @@ class MCTHomePage extends StatefulWidget {
 }
 
 class _MCTHomePageState extends State<MCTHomePage> {
-  //int _currentIndex = 0;
   int elementDuration = 240;  //int elementDuration = 240;
   Alphabet alphabet = AlphabetITU(); //Need default values...
-  //List<Widget> _children; //Shouldn't be final, as the widgets may change (? won't they just be rebuilt? Whatever...)
 
   final FocusNode _nodeText7 = FocusNode();
   //This is only for custom keyboards
@@ -64,9 +62,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
   final FilteringTextInputFormatter morseCodeFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
   TextEditingController textEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  //String _morseString = '';
-  //String _alphaString = '';
 
   /// Creates the [KeyboardActionsConfig] to hook up the fields
   /// and their focus nodes to our [FormKeyboardActions].
@@ -78,7 +73,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
       actions: [
         KeyboardActionsItem(
           focusNode: _nodeText7,
-          footerBuilder: (_) => MorseKeyboard2(
+          footerBuilder: (_) => MorseKeyboard(
             notifier: custom1Notifier,
           ),
         ),
@@ -86,12 +81,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  /*_MCTHomePageState(){
-    this._children = [
-      TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-      TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-    ];
-  }*/
   _MCTHomePageState(){
     textEditingController.selection = TextSelection.fromPosition(
       TextPosition(offset: 0, affinity: TextAffinity.upstream),
@@ -104,8 +93,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
     SharedPreferences.getInstance().then((SharedPreferences prefs) {
       this.elementDuration = prefs.getInt('elementDuration') ?? 240;
 
-      //String chosenAlphabet = prefs.getString('alphabet') ?? 'ITU';
-
       switch(prefs.getString('alphabet') ?? 'ITU'){
         case 'ITU' : {this.alphabet = AlphabetITU();}
         break;
@@ -116,19 +103,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
         default : {this.alphabet = AlphabetITU();}
         break;
       }
-
-      /*this._children = [
-        TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-        TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-      ];*/
     });
   }
-
-  /*void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }*/
 
   Widget _buildAlphanumericInput(){
     return TextFormField(
@@ -142,12 +118,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
           return 'Please enter some text';
         }
         return null;  //MUST RETURN NULL
-      },
-      //onFieldSubmitted: (String value){_title=value;},
-      onSaved: (value) {
-        setState(() {
-          //_alphaString = value;
-        });
       },
     );
   }
@@ -214,8 +184,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
           try {
             print('Translate to morse');
             print('Value: ' + textEditingController.text);
-            //custom1Notifier.value;
-            //custom1Notifier = ValueNotifier<String>("Poop");
             custom1Notifier.value = Translator.translateToMorse(textEditingController.text, alphabet);
           } on TranslationError catch (e) {
             print(e.cause);
@@ -244,31 +212,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 child: _buildAlphanumericInput()
             ),),
             Column(
-              //crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildTranslateToAlphaButton(Orientation.landscape),
                 _buildTranslateToMorseButton(Orientation.landscape),
-                /*IconButton(
-                    onPressed: (){
-                      print('Translate to alphanumeric');
-                    },
-                    icon: Icon(Icons.arrow_back)
-                ),
-                IconButton(
-                    onPressed: (){
-                      print('Translate to morse');
-                    },
-                    icon: Icon(Icons.arrow_forward)
-                ),*/
               ],
             ),
-
-            //Expanded(child: _buildMorseInput(),),
-            /*Expanded(child: Align(
-                              alignment: Alignment.center,
-                              child: _buildMorseInput()
-                          ),),*/
             Expanded(flex: 5, child: Align(
               alignment: Alignment.center,
               child: Column(
@@ -323,45 +272,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                      onPressed: (){
-                        try{
-                          print('Translate to alphanumeric');
-                          print('Value: ' + custom1Notifier.value);
-                          setState(() {
-                            var translated = Translator.translateFromMorse(custom1Notifier.value, alphabet);
-                            print('Translated: $translated');
-                            //_alphaString = translated;
-                            textEditingController.text = translated;
-                          });
-                        } on TranslationError catch (e) {
-                          print(e.cause);
-                          textEditingController.text = '';
-                          ScaffoldMessenger
-                              .of(context)
-                              .showSnackBar(SnackBar(content: Text('Malformed morse code : ' + e.cause)));
-                        }
-                      },
-                      icon: Icon(Icons.arrow_upward)
-                  ),
-                  IconButton(
-                      onPressed: (){
-                        try {
-                          print('Translate to morse');
-                          print('Value: ' + textEditingController.text);
-                          //custom1Notifier.value;
-                          //custom1Notifier = ValueNotifier<String>("Poop");
-                          custom1Notifier.value = Translator.translateToMorse(textEditingController.text, alphabet);
-                        } on TranslationError catch (e) {
-                          print(e.cause);
-                          custom1Notifier.value = '';
-                          ScaffoldMessenger
-                              .of(context)
-                              .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
-                        }
-                      },
-                      icon: Icon(Icons.arrow_downward)
-                  ),
+                  _buildTranslateToAlphaButton(Orientation.landscape),
+                  _buildTranslateToMorseButton(Orientation.landscape),
                 ],
               ),
               Expanded(child: Row(
@@ -410,7 +322,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
           IconButton(
               icon: Icon(Icons.settings),
               onPressed: (){
-                //Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new GreenFrog()));
                 showDialog(
                     context: context,
                     builder: (BuildContext context){
@@ -423,20 +334,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
                             print(elementDuration);
                             setState(() {
                               this.elementDuration = elementDuration;
-                              /*this._children = [
-                                TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-                                TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-                              ];*/
                             });
                           },
                           onAlphabetCallback : (Alphabet alphabet) {
                             print(alphabet.name);
                             setState(() {
                               this.alphabet = alphabet;
-                              /*this._children = [
-                                TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-                                TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-                              ];*/
                             });
                           }
                         ),
@@ -446,145 +349,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
               })
         ],
       ),
-      /*body: Column(
-        children: [
-          BannerAdWidget(),
-          _children[_currentIndex],
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: onTabTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.login),
-            label: 'To Morse',
-          ),
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.logout),
-            label: 'From Morse',
-          ),
-        ],
-      ),*/
       body: OrientationBuilder(
         builder: (context, orientation){
           _nodeText7.unfocus(); //Fixes keyboard going jank when rotating the phone (when the morse keyboard is present)
           if(orientation == Orientation.landscape){
-            /*return Column(
-              children: [
-                BannerAdWidget(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(child: Align(
-                        alignment: Alignment.center,
-                        child: _buildAlphanumericInput()
-                    ),),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                            onPressed: (){
-                              print('Translate to alphanumeric');
-                            },
-                            icon: Icon(Icons.arrow_back)
-                        ),
-                        IconButton(
-                            onPressed: (){
-                              print('Translate to morse');
-                            },
-                            icon: Icon(Icons.arrow_forward)
-                        ),
-                      ],
-                    ),
-                    _buildMorseInput(),
-                  ],
-                )
-              ],
-            );*/
             return _buildLandscape();
           } else {
-            /*return Column(
-              children: [
-                Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          TextFormField(
-                            decoration: InputDecoration(
-                                labelText: 'Enter the text to translate'
-                            ),
-                            inputFormatters: [morseCodeFilter],
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return null;  //MUST RETURN NULL
-                            },
-                            //onFieldSubmitted: (String value){_title=value;},
-                            onSaved: (value) {
-                              setState(() {
-                                _alphaString = value;
-                              });
-                            },
-                          ),
-                          /*ElevatedButton(
-                          onPressed: () {
-                            print(alphabet.name);
-                            if (_formKey.currentState.validate()) { // Validate returns true if the form is valid, otherwise false.
-                              _formKey.currentState.save();
-
-                              try{
-                                setState(() {
-                                  var translated = Translator.translateToMorse(_alphaString, alphabet);
-                                  print('Translated: $translated');
-                                  _morseString = translated;
-                                });
-                              } on TranslationError catch (e) {
-                                setState(() {
-                                  _morseString = '';
-                                  print('Could not translate...' + e.cause);
-                                });
-                              }
-                            }
-                          },
-                          child: Text('Translate'),
-                        ),*/
-                        ]
-                    ),
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                        onPressed: (){
-                          print('Translate to alphanumeric');
-                          print('Value: ' + custom1Notifier.value);
-                        },
-                        icon: Icon(Icons.arrow_upward)
-                    ),
-                    IconButton(
-                        onPressed: (){
-                          print('Translate to morse');
-                          print('Value: ' + custom1Notifier.value);
-                          //custom1Notifier.value;
-                          //custom1Notifier = ValueNotifier<String>("Poop");
-                          custom1Notifier.value = 'Poop';
-                        },
-                        icon: Icon(Icons.arrow_downward)
-                    ),
-                  ],
-                ),
-                _buildMorseInput(),
-              ],
-            );*/
             return _buildPortrait();
           }
         },
