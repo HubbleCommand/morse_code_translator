@@ -207,9 +207,16 @@ class _MCTHomePageState extends State<MCTHomePage> {
               quarterTurns: 3,
               child: BannerAdWidget(adSize: AdSize.banner),
             ),
-            Expanded(flex: 5, child: Align(
-                alignment: Alignment.center,
-                child: _buildAlphanumericInput()
+            Expanded(flex: 5, child: Row(
+              children: [
+                Expanded(child: _buildAlphanumericInput()),
+                CopyToClipboardWidget(
+                  message: 'Text copied to clipboard',
+                  onTapCopy: (){
+                    return textEditingController.text;
+                  },
+                ),
+              ],
             ),),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -222,13 +229,20 @@ class _MCTHomePageState extends State<MCTHomePage> {
               alignment: Alignment.center,
               child: Column(
                 children: [
-                  Expanded(child: _buildMorseInput(),),
-                  CopyToClipboardWidget(
-                    message: 'Morse copied',
-                    onTapCopy: (){
-                      return custom1Notifier.value;
-                    },
-                  ),
+                  Expanded(child: Row(
+                    children: [
+                      Expanded(child: Align(
+                          alignment: Alignment.center,
+                          child: _buildMorseInput()
+                      ),),
+                      CopyToClipboardWidget(
+                        message: 'Morse copied to clipboard',
+                        onTapCopy: (){
+                          return custom1Notifier.value;
+                        },
+                      ),
+                    ],
+                  ),),
                   AudioVisualPlayerWidget(
                     elementDuration: elementDuration,
                     onPlayCallback: (){
