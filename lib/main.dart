@@ -1,13 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/banner_ad.dart';
+import 'package:morse_code_translator/widgets/copy_clipboard.dart';
+import 'package:morse_code_translator/widgets/morse_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:morse_code_translator/widgets/about.dart';
 import 'package:morse_code_translator/widgets/settings.dart';
-import 'package:morse_code_translator/widgets/translate_from.dart';
-import 'package:morse_code_translator/widgets/translate_to.dart';
-
+import 'controllers/translator.dart';
 import 'models/alphabet.dart';
 
 void main() {
@@ -49,16 +52,50 @@ class MCTHomePage extends StatefulWidget {
 }
 
 class _MCTHomePageState extends State<MCTHomePage> {
-  int _currentIndex = 0;
+  //int _currentIndex = 0;
   int elementDuration = 240;  //int elementDuration = 240;
   Alphabet alphabet = AlphabetITU(); //Need default values...
-  List<Widget> _children; //Shouldn't be final, as the widgets may change (? won't they just be rebuilt? Whatever...)
+  //List<Widget> _children; //Shouldn't be final, as the widgets may change (? won't they just be rebuilt? Whatever...)
 
-  _MCTHomePageState(){
+  final FocusNode _nodeText7 = FocusNode();
+  //This is only for custom keyboards
+  final custom1Notifier = ValueNotifier<String>("");
+
+  final FilteringTextInputFormatter morseCodeFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+  TextEditingController textEditingController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  //String _morseString = '';
+  //String _alphaString = '';
+
+  /// Creates the [KeyboardActionsConfig] to hook up the fields
+  /// and their focus nodes to our [FormKeyboardActions].
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+      keyboardBarColor: Colors.grey[200],
+      nextFocus: false,
+      actions: [
+        KeyboardActionsItem(
+          focusNode: _nodeText7,
+          footerBuilder: (_) => MorseKeyboard2(
+            notifier: custom1Notifier,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /*_MCTHomePageState(){
     this._children = [
       TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
       TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
     ];
+  }*/
+  _MCTHomePageState(){
+    textEditingController.selection = TextSelection.fromPosition(
+      TextPosition(offset: 0, affinity: TextAffinity.upstream),
+    );
   }
 
   @override
@@ -80,17 +117,274 @@ class _MCTHomePageState extends State<MCTHomePage> {
         break;
       }
 
-      this._children = [
+      /*this._children = [
         TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
         TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-      ];
+      ];*/
     });
   }
 
-  void onTabTapped(int index) {
+  /*void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }*/
+
+  Widget _buildAlphanumericInput(){
+    return TextFormField(
+      controller: textEditingController,
+      decoration: InputDecoration(
+          labelText: 'Enter the text to translate'
+      ),
+      inputFormatters: [morseCodeFilter],
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;  //MUST RETURN NULL
+      },
+      //onFieldSubmitted: (String value){_title=value;},
+      onSaved: (value) {
+        setState(() {
+          //_alphaString = value;
+        });
+      },
+    );
+  }
+
+  Widget _buildMorseInput(){
+    return KeyboardActions(
+      tapOutsideToDismiss: true,
+      config: _buildConfig(context),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              KeyboardCustomInput<String>(
+                focusNode: _nodeText7,
+                //height: 65, //Fixes text overflowing and not showing
+                notifier: custom1Notifier,
+                builder: (context, val, hasFocus) {
+                  return Container(
+                    alignment: Alignment.center,
+                    color: hasFocus ? Colors.grey[300] : Colors.white,
+                    child: Text(
+                      val,
+                      style:  TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTranslateToAlphaButton (Orientation orientation) {
+    return IconButton(
+        onPressed: (){
+          try{
+            print('Translate to alphanumeric');
+            print('Value: ' + custom1Notifier.value);
+            setState(() {
+              var translated = Translator.translateFromMorse(custom1Notifier.value, alphabet);
+              print('Translated: $translated');
+              //_alphaString = translated;
+              textEditingController.text = translated;
+            });
+          } on TranslationError catch (e) {
+            print(e.cause);
+            textEditingController.text = '';
+            ScaffoldMessenger
+                .of(context)
+                .showSnackBar(SnackBar(content: Text('Malformed morse code : ' + e.cause)));
+          }
+        },
+        icon: Icon(orientation == Orientation.portrait ? Icons.arrow_upward : Icons.arrow_back)
+    );
+  }
+
+  Widget _buildTranslateToMorseButton(Orientation orientation) {
+    return IconButton(
+        onPressed: (){
+          try {
+            print('Translate to morse');
+            print('Value: ' + textEditingController.text);
+            //custom1Notifier.value;
+            //custom1Notifier = ValueNotifier<String>("Poop");
+            custom1Notifier.value = Translator.translateToMorse(textEditingController.text, alphabet);
+          } on TranslationError catch (e) {
+            print(e.cause);
+            custom1Notifier.value = '';
+            ScaffoldMessenger
+                .of(context)
+                .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
+          }
+        },
+        icon: Icon(orientation == Orientation.landscape ?  Icons.arrow_forward :  Icons.arrow_downward)
+    );
+  }
+
+  Widget _buildLandscape(){
+    return Container(
+      child: Form(
+        key: _formKey,
+        child: Row(
+          children: [
+            RotatedBox(
+              quarterTurns: 3,
+              child: BannerAdWidget(adSize: AdSize.banner),
+            ),
+            Expanded(flex: 5, child: Align(
+                alignment: Alignment.center,
+                child: _buildAlphanumericInput()
+            ),),
+            Column(
+              //crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildTranslateToAlphaButton(Orientation.landscape),
+                _buildTranslateToMorseButton(Orientation.landscape),
+                /*IconButton(
+                    onPressed: (){
+                      print('Translate to alphanumeric');
+                    },
+                    icon: Icon(Icons.arrow_back)
+                ),
+                IconButton(
+                    onPressed: (){
+                      print('Translate to morse');
+                    },
+                    icon: Icon(Icons.arrow_forward)
+                ),*/
+              ],
+            ),
+
+            //Expanded(child: _buildMorseInput(),),
+            /*Expanded(child: Align(
+                              alignment: Alignment.center,
+                              child: _buildMorseInput()
+                          ),),*/
+            Expanded(flex: 5, child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Expanded(child: _buildMorseInput(),),
+                  CopyToClipboardWidget(
+                    message: 'Morse copied',
+                    onTapCopy: (){
+                      return custom1Notifier.value;
+                    },
+                  ),
+                  AudioVisualPlayerWidget(
+                    elementDuration: elementDuration,
+                    onPlayCallback: (){
+                      return custom1Notifier.value;
+                    },
+                  ),
+                ],
+              ),
+            ),),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortrait(){
+    return Container(
+      child: Form(
+        key: _formKey,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              BannerAdWidget(),
+              //Spacer(),
+              Expanded(child: Row(
+                children: [
+                  Expanded(child: Align(
+                      alignment: Alignment.center,
+                      child: _buildAlphanumericInput()
+                  ),),
+                  CopyToClipboardWidget(
+                    message: 'Text copied to clipboard',
+                    onTapCopy: (){
+                      return textEditingController.text;
+                    },
+                  ),
+                ],
+              ),),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: (){
+                        try{
+                          print('Translate to alphanumeric');
+                          print('Value: ' + custom1Notifier.value);
+                          setState(() {
+                            var translated = Translator.translateFromMorse(custom1Notifier.value, alphabet);
+                            print('Translated: $translated');
+                            //_alphaString = translated;
+                            textEditingController.text = translated;
+                          });
+                        } on TranslationError catch (e) {
+                          print(e.cause);
+                          textEditingController.text = '';
+                          ScaffoldMessenger
+                              .of(context)
+                              .showSnackBar(SnackBar(content: Text('Malformed morse code : ' + e.cause)));
+                        }
+                      },
+                      icon: Icon(Icons.arrow_upward)
+                  ),
+                  IconButton(
+                      onPressed: (){
+                        try {
+                          print('Translate to morse');
+                          print('Value: ' + textEditingController.text);
+                          //custom1Notifier.value;
+                          //custom1Notifier = ValueNotifier<String>("Poop");
+                          custom1Notifier.value = Translator.translateToMorse(textEditingController.text, alphabet);
+                        } on TranslationError catch (e) {
+                          print(e.cause);
+                          custom1Notifier.value = '';
+                          ScaffoldMessenger
+                              .of(context)
+                              .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
+                        }
+                      },
+                      icon: Icon(Icons.arrow_downward)
+                  ),
+                ],
+              ),
+              Expanded(child: Row(
+                children: [
+                  Expanded(child: _buildMorseInput(),),
+                  CopyToClipboardWidget(
+                    message: 'Morse copied to clipboard',
+                    onTapCopy: (){
+                      return custom1Notifier.value;
+                    },
+                  ),
+                ],
+              )),
+              AudioVisualPlayerWidget(
+                elementDuration: elementDuration,
+                onPlayCallback: (){
+                  return custom1Notifier.value;
+                },
+              ),
+            ]
+        ),
+      ),
+    );
   }
 
   @override
@@ -129,20 +423,20 @@ class _MCTHomePageState extends State<MCTHomePage> {
                             print(elementDuration);
                             setState(() {
                               this.elementDuration = elementDuration;
-                              this._children = [
+                              /*this._children = [
                                 TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
                                 TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-                              ];
+                              ];*/
                             });
                           },
                           onAlphabetCallback : (Alphabet alphabet) {
                             print(alphabet.name);
                             setState(() {
                               this.alphabet = alphabet;
-                              this._children = [
+                              /*this._children = [
                                 TranslateToMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
                                 TranslateFromMorsePage(alphabet: this.alphabet, elementDuration: this.elementDuration),
-                              ];
+                              ];*/
                             });
                           }
                         ),
@@ -152,7 +446,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
               })
         ],
       ),
-      body: Column(
+      /*body: Column(
         children: [
           BannerAdWidget(),
           _children[_currentIndex],
@@ -171,7 +465,130 @@ class _MCTHomePageState extends State<MCTHomePage> {
             label: 'From Morse',
           ),
         ],
-      ),
+      ),*/
+      body: OrientationBuilder(
+        builder: (context, orientation){
+          _nodeText7.unfocus(); //Fixes keyboard going jank when rotating the phone (when the morse keyboard is present)
+          if(orientation == Orientation.landscape){
+            /*return Column(
+              children: [
+                BannerAdWidget(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child: Align(
+                        alignment: Alignment.center,
+                        child: _buildAlphanumericInput()
+                    ),),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                            onPressed: (){
+                              print('Translate to alphanumeric');
+                            },
+                            icon: Icon(Icons.arrow_back)
+                        ),
+                        IconButton(
+                            onPressed: (){
+                              print('Translate to morse');
+                            },
+                            icon: Icon(Icons.arrow_forward)
+                        ),
+                      ],
+                    ),
+                    _buildMorseInput(),
+                  ],
+                )
+              ],
+            );*/
+            return _buildLandscape();
+          } else {
+            /*return Column(
+              children: [
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          TextFormField(
+                            decoration: InputDecoration(
+                                labelText: 'Enter the text to translate'
+                            ),
+                            inputFormatters: [morseCodeFilter],
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;  //MUST RETURN NULL
+                            },
+                            //onFieldSubmitted: (String value){_title=value;},
+                            onSaved: (value) {
+                              setState(() {
+                                _alphaString = value;
+                              });
+                            },
+                          ),
+                          /*ElevatedButton(
+                          onPressed: () {
+                            print(alphabet.name);
+                            if (_formKey.currentState.validate()) { // Validate returns true if the form is valid, otherwise false.
+                              _formKey.currentState.save();
+
+                              try{
+                                setState(() {
+                                  var translated = Translator.translateToMorse(_alphaString, alphabet);
+                                  print('Translated: $translated');
+                                  _morseString = translated;
+                                });
+                              } on TranslationError catch (e) {
+                                setState(() {
+                                  _morseString = '';
+                                  print('Could not translate...' + e.cause);
+                                });
+                              }
+                            }
+                          },
+                          child: Text('Translate'),
+                        ),*/
+                        ]
+                    ),
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        onPressed: (){
+                          print('Translate to alphanumeric');
+                          print('Value: ' + custom1Notifier.value);
+                        },
+                        icon: Icon(Icons.arrow_upward)
+                    ),
+                    IconButton(
+                        onPressed: (){
+                          print('Translate to morse');
+                          print('Value: ' + custom1Notifier.value);
+                          //custom1Notifier.value;
+                          //custom1Notifier = ValueNotifier<String>("Poop");
+                          custom1Notifier.value = 'Poop';
+                        },
+                        icon: Icon(Icons.arrow_downward)
+                    ),
+                  ],
+                ),
+                _buildMorseInput(),
+              ],
+            );*/
+            return _buildPortrait();
+          }
+        },
+      )
     );
   }
 }
