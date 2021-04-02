@@ -52,11 +52,13 @@ class MCTHomePage extends StatefulWidget {
 }
 
 class _MCTHomePageState extends State<MCTHomePage> {
-  int elementDuration = 240;  //int elementDuration = 240;
-  Alphabet alphabet = AlphabetITU(); //Need default values...
+  //Need default values...
+  int elementDuration = 240;
+  Alphabet alphabet = AlphabetITU();
 
-  final FocusNode _nodeText7 = FocusNode();
   //This is only for custom keyboards
+  final FocusNode _nodeText7 = FocusNode();
+
   final custom1Notifier = ValueNotifier<String>("");
 
   final FilteringTextInputFormatter morseCodeFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
@@ -81,15 +83,10 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  _MCTHomePageState(){
-    textEditingController.selection = TextSelection.fromPosition(
-      TextPosition(offset: 0, affinity: TextAffinity.upstream),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
+    //Get the user-saved preferences from other sessions
     SharedPreferences.getInstance().then((SharedPreferences prefs) {
       this.elementDuration = prefs.getInt('elementDuration') ?? 240;
 
@@ -163,7 +160,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
             setState(() {
               var translated = Translator.translateFromMorse(custom1Notifier.value, alphabet);
               print('Translated: $translated');
-              //_alphaString = translated;
               textEditingController.text = translated;
             });
           } on TranslationError catch (e) {
@@ -203,21 +199,30 @@ class _MCTHomePageState extends State<MCTHomePage> {
         key: _formKey,
         child: Row(
           children: [
-            RotatedBox(
+            RotatedBox( //Rotates ad 90 degrees while widget is being built, so placement is known, unlike with Transform, where the child will be placed ugily overtop
               quarterTurns: 3,
               child: BannerAdWidget(adSize: AdSize.banner),
             ),
-            Expanded(flex: 5, child: Row(
-              children: [
-                Expanded(child: _buildAlphanumericInput()),
-                CopyToClipboardWidget(
-                  message: 'Text copied to clipboard',
-                  onTapCopy: (){
-                    return textEditingController.text;
-                  },
-                ),
-              ],
-            ),),
+            Padding(padding: EdgeInsets.all(6.0),), //Creates space between ad and Alphanumeric input area
+            Expanded(flex: 5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Alphanumeric'),
+                  Row(
+                    children: [
+                      Expanded(child: _buildAlphanumericInput()),
+                      CopyToClipboardWidget(
+                        message: 'Text copied to clipboard',
+                        onTapCopy: (){
+                          return textEditingController.text;
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -225,24 +230,34 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 _buildTranslateToMorseButton(Orientation.landscape),
               ],
             ),
-            Expanded(flex: 5, child: Align(
-              alignment: Alignment.center,
+            Expanded(
+              flex: 5,
               child: Column(
+                //crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(child: Row(
-                    children: [
-                      Expanded(child: Align(
-                          alignment: Alignment.center,
-                          child: _buildMorseInput()
-                      ),),
-                      CopyToClipboardWidget(
-                        message: 'Morse copied to clipboard',
-                        onTapCopy: (){
-                          return custom1Notifier.value;
-                        },
-                      ),
-                    ],
-                  ),),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Text('Morse'),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        Expanded(flex: 1, child: Align(
+                            alignment: Alignment.center,
+                            child: _buildMorseInput()
+                        ),),
+                        CopyToClipboardWidget(
+                          message: 'Morse copied to clipboard',
+                          onTapCopy: (){
+                            return custom1Notifier.value;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                   AudioVisualPlayerWidget(
                     elementDuration: elementDuration,
                     onPlayCallback: (){
@@ -251,7 +266,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                   ),
                 ],
               ),
-            ),),
+            ),
           ],
         ),
       ),
@@ -363,7 +378,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
               })
         ],
       ),
-      body: OrientationBuilder(
+      /*body: OrientationBuilder(
         builder: (context, orientation){
           _nodeText7.unfocus(); //Fixes keyboard going jank when rotating the phone (when the morse keyboard is present)
           if(orientation == Orientation.landscape){
@@ -372,7 +387,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
             return _buildPortrait();
           }
         },
-      )
+      )*/
+      body: _buildPortrait()
     );
   }
 }
