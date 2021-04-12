@@ -35,15 +35,6 @@ class MorseCodeTranslatorApp extends StatelessWidget {
 class MCTHomePage extends StatefulWidget {
   MCTHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -55,9 +46,22 @@ class _MCTHomePageState extends State<MCTHomePage> {
   int elementDuration = 240;
   Alphabet alphabet = AlphabetITU();
 
-  final FilteringTextInputFormatter morseCodeFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
-  TextEditingController textEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  //Controllers & formatters for alphanumeric input
+  final FilteringTextInputFormatter alphanumericFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+  TextEditingController textEditingController = TextEditingController();
+
+  //Controllers & formatters for morse input
+  final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
+  TextEditingController morseEditingController = TextEditingController();
+
+  bool morseOrNot = false;  //Whether or not we are translating morse to alpha
+
+  String _translatedText;   //The translated text, no matter the type (morse or alphanumeric)
+
+  MaterialColor selectedAreaColor = Colors.blue;  //The background color if the item is selected
+  Color selectedTextColor = Colors.white;
 
   @override
   void initState() {
@@ -85,36 +89,13 @@ class _MCTHomePageState extends State<MCTHomePage> {
       decoration: InputDecoration(
           labelText: 'Enter text to translate to Morse'
       ),
-      inputFormatters: [morseCodeFilter],
+      inputFormatters: [alphanumericFilter],
       validator: (value) {
         if (value.isEmpty) {
           return 'Please enter some text';
         }
         return null;  //MUST RETURN NULL
       },
-    );
-  }
-
-  final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
-  TextEditingController morseEditingController = TextEditingController();
-
-  String insertSymbolAtLocation(int index, String text, String symbol){
-    if(index <= 0){
-      return symbol += text;
-    } else if (index >= text.length){
-      return text += symbol;
-    } else {
-      String first = text.substring(0, index);
-      String last = text.substring(index);
-      return first + symbol + last;
-    }
-  }
-
-  void doInsertSymbol(String symbol){
-    int currentCursorPosition = morseEditingController.selection.start;
-    morseEditingController.text = insertSymbolAtLocation(morseEditingController.selection.start, morseEditingController.text, symbol);
-    morseEditingController.selection = TextSelection.fromPosition(
-      TextPosition(offset: currentCursorPosition + 1),
     );
   }
 
@@ -129,181 +110,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
       elementDuration: elementDuration,
       morseEditingController: morseEditingController,
     );
-    /*return Column(
-      children: [
-        TextFormField(
-          controller: morseEditingController,
-          decoration: InputDecoration(
-            labelText: 'Enter Morse to translate to alphanumeric',
-          ),
-          inputFormatters: [morseCodeCodeFilter],
-          toolbarOptions: ToolbarOptions(
-            copy: true
-          ),
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'Please enter some text';
-            }
-            return null;  //MUST RETURN NULL
-          },
-        ),
-
-        includeCustomInput ?
-        Wrap(
-          children: [
-            OutlinedButton(
-              child: Text('.'),
-              onPressed: (){doInsertSymbol('.');},
-            ),
-            OutlinedButton(
-              child: Text('-'),
-              onPressed: (){doInsertSymbol('-');},
-            ),
-            OutlinedButton(
-              child: Text("CHAR SPACE"),
-              onPressed: (){doInsertSymbol('   ');},
-            ),
-            OutlinedButton(
-              child: Text('WORD SPACE'),
-              onPressed: (){doInsertSymbol('       ');},
-            ),
-          ],
-        ) : Container(),
-        AudioVisualPlayerWidget(
-          elementDuration: elementDuration,
-          onPlayCallback: (){
-            return morseEditingController.text;
-          },
-        ),
-      ],
-    );*/
-
   }
-
-  Widget _buildTranslateToAlphaButton (Orientation orientation) {
-    return IconButton(
-        onPressed: (){
-          try{
-            print('Translate to alphanumeric');
-            setState(() {
-              var translated = Translator.translateFromMorse(morseEditingController.text, alphabet);
-              print('Translated: $translated');
-              textEditingController.text = translated;
-            });
-          } on TranslationError catch (e) {
-            print(e.cause);
-            textEditingController.text = '';
-            ScaffoldMessenger
-                .of(context)
-                .showSnackBar(SnackBar(content: Text('Malformed morse code : ' + e.cause)));
-          }
-        },
-        icon: Icon(orientation == Orientation.portrait ? Icons.arrow_upward : Icons.arrow_back)
-    );
-  }
-
-  Widget _buildTranslateToMorseButton(Orientation orientation) {
-    return IconButton(
-        onPressed: (){
-          try {
-            print('Translate to morse');
-            print('Value: ' + textEditingController.text);
-            String morseString = Translator.translateToMorse(textEditingController.text, alphabet);
-            morseEditingController.text = morseString;
-          } on TranslationError catch (e) {
-            print(e.cause);
-            ScaffoldMessenger
-                .of(context)
-                .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
-          }
-        },
-        icon: Icon(orientation == Orientation.landscape ?  Icons.arrow_forward :  Icons.arrow_downward)
-    );
-  }
-
-  Widget _buildLandscape(){
-    return Container(
-      child: /*Form(
-        key: _formKey,
-        child: */Row(
-          children: [
-            RotatedBox( //Rotates ad 90 degrees while widget is being built, so placement is known, unlike with Transform, where the child will be placed ugily overtop
-              quarterTurns: 3,
-              child: BannerAdWidget(adSize: AdSize.banner),
-            ),
-            Padding(padding: EdgeInsets.all(6.0),), //Creates space between ad and Alphanumeric input area
-            Expanded(flex: 5,
-              child: Column(
-                //mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //Text('Alphanumeric'),
-                  Row(
-                    children: [
-                      Expanded(child: _buildAlphanumericInput()),
-                      CopyToClipboardWidget(
-                        message: 'Text copied to clipboard',
-                        onTapCopy: (){
-                          return textEditingController.text;
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ),
-            Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildTranslateToAlphaButton(Orientation.landscape),
-                _buildTranslateToMorseButton(Orientation.landscape),
-              ],
-            ),
-            Expanded(
-              flex: 5,
-              child: Column(
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  /*Expanded(
-                    child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Text('Morse'),
-                    ),
-                  ),*/
-                  Expanded(
-                    flex: 1,
-                    child:
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(child: _buildMorseInput(false)),
-                        CopyToClipboardWidget(
-                          message: 'Morse copied to clipboard',
-                          onTapCopy: (){
-                            return morseEditingController.text;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  AudioVisualPlayerWidget(
-                    elementDuration: elementDuration,
-                    onPlayCallback: (){
-                      return morseEditingController.text;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      //),
-    );
-  }
-
-  bool morseOrNot = false;
-
-  MaterialColor selectedColor = Colors.blue;
 
   Widget _buildSwitcher(){
     return Row(
@@ -312,13 +119,13 @@ class _MCTHomePageState extends State<MCTHomePage> {
         Expanded(
           child: Container(
             decoration: new BoxDecoration(
-                color: morseOrNot ? null : selectedColor,
+                color: morseOrNot ? null : selectedAreaColor,
                 borderRadius: new BorderRadius.all(Radius.circular(10.0))
             ),
             child: new Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: new Text("Alphanumeric"),
+                  child: new Text("Alphanumeric", style: TextStyle(color: morseOrNot ? null : selectedTextColor)),
                 )
             ),
           ),
@@ -337,13 +144,13 @@ class _MCTHomePageState extends State<MCTHomePage> {
         Expanded(
           child:Container(
             decoration: new BoxDecoration(
-                color: morseOrNot ? selectedColor : null,
+                color: morseOrNot ? selectedAreaColor : null,
                 borderRadius: new BorderRadius.all(Radius.circular(10.0))
             ),
             child: Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: new Text("Morse"),
+                  child: new Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
                 )
             ),
           ),
@@ -352,34 +159,26 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  String _translatedText;
-
   Widget _buildResultingText(){
     return Expanded(
       child: Column(
         children: [
           //Text('$_translatedText'),
-          Container(
-            decoration: new BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: new BorderRadius.all(Radius.circular(10.0))
-            ),
-            child: Center(
-
-                child: new Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: new Text("$_translatedText"),
-                )
-            ),
-          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              morseOrNot ? Container() : AudioVisualPlayerWidget(
-                elementDuration: elementDuration,
-                onPlayCallback: (){
-                  return _translatedText;
-                },
+              Expanded(
+                child: Container(
+                  decoration: new BoxDecoration(
+                      color: Colors.blueGrey,
+                      borderRadius: new BorderRadius.all(Radius.circular(10.0))
+                  ),
+                  child: Center(
+                      child: new Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: new Text("$_translatedText"),
+                      )
+                  ),
+                ),
               ),
               CopyToClipboardWidget(
                 message: 'Text copied to clipboard',
@@ -388,7 +187,13 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 },
               ),
             ],
-          )
+          ),
+          morseOrNot ? Container() : AudioVisualPlayerWidget(
+            elementDuration: elementDuration,
+            onPlayCallback: (){
+              return _translatedText;
+            },
+          ),
         ],
       ),
     );
@@ -403,19 +208,17 @@ class _MCTHomePageState extends State<MCTHomePage> {
 
             String temp;
             if(morseOrNot){
-              String morseString = Translator.translateFromMorse(morseEditingController.text, alphabet);
-              temp = morseString;
+              temp = Translator.translateFromMorse(morseEditingController.text, alphabet);
             } else {
-              String morseString = Translator.translateToMorse(textEditingController.text, alphabet);
-              temp = morseString;
+              temp = Translator.translateToMorse(textEditingController.text, alphabet);
             }
+
             setState(() {
               _translatedText = temp;
             });
           } on TranslationError catch (e) {
             print(e.cause);
-            ScaffoldMessenger
-                .of(context)
+            ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
           }
         },
@@ -433,12 +236,10 @@ class _MCTHomePageState extends State<MCTHomePage> {
             children: <Widget>[
               BannerAdWidget(),
               _buildSwitcher(),
-              //Spacer(),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                      //child: _buildAlphanumericInput()
                     child: morseOrNot ? _buildMorseInput(true) : _buildAlphanumericInput(),
                   ),
                   CopyToClipboardWidget(
@@ -449,41 +250,15 @@ class _MCTHomePageState extends State<MCTHomePage> {
                   ),
                 ],
               ),),
-              /*Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildTranslateToAlphaButton(Orientation.portrait),
-                  _buildTranslateToMorseButton(Orientation.portrait),
-                ],
-              ),*/
               _buildTranslateButton(),
               _buildResultingText(),
-              /*Expanded(child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: _buildMorseInput(false)),
-                  CopyToClipboardWidget(
-                    message: 'Morse copied to clipboard',
-                    onTapCopy: (){
-                      return morseEditingController.text;
-                    },
-                  ),
-                ],
-              )),
-              AudioVisualPlayerWidget(
-                elementDuration: elementDuration,
-                onPlayCallback: (){
-                  return morseEditingController.text;
-                },
-              ),*/
             ]
         ),
       ),
     );
   }
 
-  Widget _buildLandscape2(){
+  Widget _buildLandscape(){
     return Container(
       child: Form(
         key: _formKey,
@@ -508,7 +283,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    //child: _buildAlphanumericInput()
                                     child: morseOrNot ? _buildMorseInput(true) : _buildAlphanumericInput(),
                                   ),
                                   CopyToClipboardWidget(
@@ -519,7 +293,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
                                   ),
                                 ],
                               ),
-
                             ],
                           )
                         ),
@@ -584,13 +357,14 @@ class _MCTHomePageState extends State<MCTHomePage> {
                       );
                     }
                 );
-              })
+              }
+          )
         ],
       ),
       body: OrientationBuilder(
         builder: (context, orientation){
           if(orientation == Orientation.landscape){
-            return _buildLandscape2();
+            return _buildLandscape();
           } else {
             return _buildPortrait();
           }
