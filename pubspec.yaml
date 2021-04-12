@@ -29,8 +29,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
 
-  keyboard_actions: ^3.4.0
-
   # Ads
   google_mobile_ads: ^0.12.0
 
@@ -44,15 +42,22 @@ dependencies:
   wave_generator: ^0.1.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.8.0"
+
   flutter_test:
     sdk: flutter
-  integration_test:
-    sdk: flutter
+  #integration_test:
+  #  sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"
+
 flutter:
 
   # The following line ensures that the Material Icons font is
