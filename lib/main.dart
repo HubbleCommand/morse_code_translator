@@ -9,8 +9,8 @@ import 'package:morse_code_translator/widgets/morse_input.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:morse_code_translator/widgets/about.dart';
 import 'package:morse_code_translator/widgets/settings.dart';
-import 'controllers/translator.dart';
-import 'models/alphabet.dart';
+import 'package:morse_code_translator/controllers/translator.dart';
+import 'package:morse_code_translator/models/alphabet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,10 +43,15 @@ class MCTHomePage extends StatefulWidget {
 
 class _MCTHomePageState extends State<MCTHomePage> {
   //Need default values...
-  int elementDuration = 240;
-  Alphabet alphabet = AlphabetITU();
+  int elementDuration = 240;                //The user-defined duration of each Morse element (in milliseconds)
+  Alphabet alphabet = AlphabetITU();        //User-chosen Morse alphabet used to translate
+  bool morseOrNot = false;                  //Whether or not we are translating morse to alpha
+  String _translatedText = '';              //The translated text, no matter the type (morse or alphanumeric), needs a default value or shows null
+  final _formKey = GlobalKey<FormState>();  //The form key
 
-  final _formKey = GlobalKey<FormState>();
+  //Styles for switch
+  MaterialColor selectedAreaColor = Colors.blue;  //The background color if the item is selected
+  Color selectedTextColor = Colors.white;
 
   //Controllers & formatters for alphanumeric input
   final FilteringTextInputFormatter alphanumericFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
@@ -56,12 +61,10 @@ class _MCTHomePageState extends State<MCTHomePage> {
   final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
   TextEditingController morseEditingController = TextEditingController();
 
-  bool morseOrNot = false;  //Whether or not we are translating morse to alpha
-
-  String _translatedText;   //The translated text, no matter the type (morse or alphanumeric)
-
-  MaterialColor selectedAreaColor = Colors.blue;  //The background color if the item is selected
-  Color selectedTextColor = Colors.white;
+  //Callback function used to sometimes send value to / from morseInputWidget (?)
+  Function getMorseInputValue = (String morseInputValue){
+    return morseInputValue;
+  };
 
   @override
   void initState() {
@@ -99,10 +102,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Function getMorseInputValue = (String morseInputValue){
-    return morseInputValue;
-  };
-
   Widget _buildMorseInput(bool includeCustomInput){
     return MorseInputWidget(
       getValueCallback: getMorseInputValue,
@@ -112,7 +111,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildSwitcher(){
+  Widget _buildSwitcher(){  //Builds the Widget that switches between Alphanumeric and Morse input
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -159,7 +158,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildResultingText(){
+  Widget _buildResultingText(){ //Builds the Widget(s) where the translated text is displayed
     return Expanded(
       child: Column(
         children: [
@@ -199,7 +198,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildTranslateButton({Widget icon = const Text('Translate')}){
+  Widget _buildTranslateButton({Widget icon = const Text('Translate')}){  //Builds the Widget that translates the user input
     return ElevatedButton(
         onPressed: (){
           try {
@@ -226,7 +225,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildPortrait(){
+  Widget _buildPortrait(){  //Builds the app for Portrait orientations
     return Container(
       child: Form(
         key: _formKey,
@@ -258,7 +257,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildLandscape(){
+  Widget _buildLandscape(){ //Builds the app for Landscape orientations
     return Container(
       child: Form(
         key: _formKey,
