@@ -8,6 +8,7 @@ class MorseInputWidget extends StatefulWidget {
   final bool includeCustomInput;
   final int elementDuration;
   final TextEditingController morseEditingController;
+  final FilteringTextInputFormatter _morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
 
   MorseInputWidget({Key key, @required this.getValueCallback, @required this.includeCustomInput, @required this.elementDuration, @required this.morseEditingController}) : super(key: key);
 
@@ -16,9 +17,7 @@ class MorseInputWidget extends StatefulWidget {
 }
 
 class _MorseInputWidgetState extends State<MorseInputWidget> {
-  final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
-
-  String insertSymbolAtLocation(int index, String text, String symbol){
+  String _insertSymbolAtLocation(int index, String text, String symbol){
     if(index <= 0){
       return symbol += text;
     } else if (index >= text.length){
@@ -30,11 +29,25 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
     }
   }
 
-  void doInsertSymbol(String symbol){
+  void _doInsertSymbol(String symbol){
     int currentCursorPosition = widget.morseEditingController.selection.start;
-    widget.morseEditingController.text = insertSymbolAtLocation(widget.morseEditingController.selection.start, widget.morseEditingController.text, symbol);
+    widget.morseEditingController.text = _insertSymbolAtLocation(widget.morseEditingController.selection.start, widget.morseEditingController.text, symbol);
     widget.morseEditingController.selection = TextSelection.fromPosition(
-      TextPosition(offset: currentCursorPosition + 1),
+      TextPosition(offset: currentCursorPosition + symbol.length),
+    );
+  }
+
+  Widget _buildButton({@required String symbol, @required String value}){
+    return GestureDetector(
+      child: Container(
+        padding: EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blueAccent),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(symbol),
+      ),
+      onTap: (){_doInsertSymbol(value);},
     );
   }
 
@@ -47,7 +60,7 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
           decoration: InputDecoration(
             labelText: 'Enter Morse to translate to alphanumeric',
           ),
-          inputFormatters: [morseCodeCodeFilter],
+          inputFormatters: [widget._morseCodeCodeFilter],
           toolbarOptions: ToolbarOptions(
               copy: true
           ),
@@ -62,22 +75,10 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
         widget.includeCustomInput ?
         Wrap(
           children: [
-            OutlinedButton(
-              child: Text('.'),
-              onPressed: (){doInsertSymbol('.');},
-            ),
-            OutlinedButton(
-              child: Text('-'),
-              onPressed: (){doInsertSymbol('-');},
-            ),
-            OutlinedButton(
-              child: Text("CHAR SPACE"),
-              onPressed: (){doInsertSymbol('   ');},
-            ),
-            OutlinedButton(
-              child: Text('WORD SPACE'),
-              onPressed: (){doInsertSymbol('       ');},
-            ),
+            _buildButton(symbol: '.', value: '.'),
+            _buildButton(symbol: '-', value: '-'),
+            _buildButton(symbol:'CHAR SPACE', value: '   '),
+            _buildButton(symbol:'WORD SPACE', value: '       '),
           ],
         ) : Container(),
         AudioVisualPlayerWidget(
