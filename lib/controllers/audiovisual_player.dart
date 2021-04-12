@@ -97,6 +97,7 @@ class AudioVisualPlayerVibrateDecorator extends AudioVisualPlayerDecorator{
 }
 
 class AudioVisualPlayerAudioDecorator extends AudioVisualPlayerDecorator{
+  ///WARNING !!! If there are weird beeps in between tones, in might just be the computer (which is the case for the tower, frequently beeps when sound comes on & goes off)
   Soundpool pool = Soundpool(streamType: StreamType.notification);
 
   @override
