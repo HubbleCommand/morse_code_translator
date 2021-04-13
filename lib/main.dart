@@ -54,7 +54,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
   Color selectedTextColor = Colors.white;
 
   //Controllers & formatters for alphanumeric input
-  final FilteringTextInputFormatter alphanumericFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+  //AlphanumericFilter needs to take in any valid symbol OF THE CHOSEN ALPHABET
+  FilteringTextInputFormatter alphanumericFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));  //NOT final as we want to be able to change it to match a user chosen alphabet
   TextEditingController textEditingController = TextEditingController();
 
   //Controllers & formatters for morse input
@@ -83,6 +84,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
         default : {this.alphabet = AlphabetITU();}
         break;
       }
+      print(alphabet.getValidRegex());
+      alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
     });
   }
 
@@ -162,13 +165,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return Expanded(
       child: Column(
         children: [
-          //Text('$_translatedText'),
           Row(
             children: [
               Expanded(
                 child: Container(
                   decoration: new BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: Colors.grey[350],
                       borderRadius: new BorderRadius.all(Radius.circular(10.0))
                   ),
                   child: Center(
@@ -216,6 +218,9 @@ class _MCTHomePageState extends State<MCTHomePage> {
               _translatedText = temp;
             });
           } on TranslationError catch (e) {
+            setState(() {
+              _translatedText = '';
+            });
             print(e.cause);
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
@@ -233,7 +238,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              BannerAdWidget(),
+              BannerAdWidget(adSize: AdSize.banner),
               _buildSwitcher(),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,6 +355,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
                             print(alphabet.name);
                             setState(() {
                               this.alphabet = alphabet;
+                              print(alphabet.getValidRegex());
+                              this.alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
                             });
                           }
                         ),
