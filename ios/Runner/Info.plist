@@ -47,8 +47,15 @@
       <string>http</string>
     </array>
 	<false/>
-        <!-- TODO : add AdMob app id -->
-        <key>GADApplicationIdentifier</key>
-        <string></string>
+    <!-- AdMob app id -->
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-7633712286971439~9277210677</string>
+    <key>SKAdNetworkItems</key>
+      <array>
+        <dict>
+          <key>SKAdNetworkIdentifier</key>
+          <string>cstr6suwn9.skadnetwork</string>
+        </dict>
+      </array>
 </dict>
 </plist>
