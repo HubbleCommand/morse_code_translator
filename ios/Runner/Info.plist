@@ -40,6 +40,12 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<!-- For url_launcher -->
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>https</string>
+      <string>http</string>
+    </array>
 	<false/>
         <!-- TODO : add AdMob app id -->
         <key>GADApplicationIdentifier</key>

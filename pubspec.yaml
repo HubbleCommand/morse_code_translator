@@ -29,6 +29,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
 
+  # For opening pages
+  url_launcher: ^6.0.3
+
   # Ads
   google_mobile_ads: ^0.12.0
 
