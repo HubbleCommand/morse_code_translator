@@ -6,9 +6,9 @@ class BannerAdWidget extends StatelessWidget{
 
   BannerAdWidget({AdSize adSize}) :
     myBanner = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      adUnitId: 'ca-app-pub-7633712286971439/3516266468',
       //size: AdSize.fullBanner,
-      size: (adSize != null) ? adSize : AdSize.fullBanner,
+      size: (adSize != null) ? adSize : AdSize.banner,
       request: AdRequest(),
       listener: AdListener(
         // Called when an ad is successfully received.
