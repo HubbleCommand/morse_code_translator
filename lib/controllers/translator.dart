@@ -18,6 +18,19 @@ class Translator {
       if(alphabet.containsCharTranslation(textToTranslate[i])){
         try{
           morseString += alphabet.getCharTranslation(textToTranslate[i]) + ((i == textToTranslate.length - 1) ? '' : _letter_gap);
+
+          //Ads only one element letter gap if the two letters are the same
+          //NEVER use, as translateFromMorse doesn't work, and fixing it becomes nearly impossible
+          /*if(i < textToTranslate.length - 1){
+            if(textToTranslate[i] == textToTranslate[i + 1]){
+              //The next character is the same, so the char gap is only 1
+              morseString += alphabet.getCharTranslation(textToTranslate[i]) + ' ';
+            } else {
+              morseString += alphabet.getCharTranslation(textToTranslate[i]) + _letter_gap;
+            }
+          } else {
+            morseString += alphabet.getCharTranslation(textToTranslate[i]) + _letter_gap;
+          }*/
         } on AlphabetError{
           throw new TranslationError("No morse translation found for this character");  //If char isn't valid morse symbol
         }
@@ -54,6 +67,7 @@ class Translator {
         }
         else {  //Probably malformed
           // TODO handle if the duration between identical symbols is 1 instead of 3
+          // NOTE: don't do it, WAY too complicated, and with Original alphabet doesn't make sense
           throw new TranslationError("Malformed space");  //If char isn't valid morse symbol
         }
       } else {
@@ -73,7 +87,6 @@ class Translator {
         } else {
           //https://stackoverflow.com/questions/13579982/how-to-create-a-custom-exception-and-handle-it-in-dart
           //https://dart.dev/guides/language/language-tour#exceptions
-          //TODO stop returning null! Throw errors!
           throw new TranslationError("This morse snippet doesn't seem to match any character translation");
         }
       }
