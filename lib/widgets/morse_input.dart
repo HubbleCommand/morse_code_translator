@@ -18,6 +18,7 @@ class MorseInputWidget extends StatefulWidget {
 
 class _MorseInputWidgetState extends State<MorseInputWidget> {
   String _insertSymbolAtLocation(int index, String text, String symbol){
+    print(index);
     if(index <= 0){
       return symbol += text;
     } else if (index >= text.length){
@@ -31,10 +32,17 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
 
   void _doInsertSymbol(String symbol){
     int currentCursorPosition = widget.morseEditingController.selection.start;
-    widget.morseEditingController.text = _insertSymbolAtLocation(widget.morseEditingController.selection.start, widget.morseEditingController.text, symbol);
-    widget.morseEditingController.selection = TextSelection.fromPosition(
-      TextPosition(offset: currentCursorPosition + symbol.length),
-    );
+    widget.morseEditingController.text = _insertSymbolAtLocation(currentCursorPosition, widget.morseEditingController.text, symbol);
+
+    if(currentCursorPosition <= 0){//Handles if selection index is -1, i.e. if the user hasn't touched the TextField yet
+      widget.morseEditingController.selection = TextSelection.fromPosition(
+        TextPosition(offset: symbol.length),
+      );
+    } else {
+      widget.morseEditingController.selection = TextSelection.fromPosition(
+        TextPosition(offset: currentCursorPosition + symbol.length),
+      );
+    }
   }
 
   Widget _buildButton({@required String symbol, @required String value}){
