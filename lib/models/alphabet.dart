@@ -7,6 +7,22 @@ abstract class Alphabet{
   Map<String, String> alphabet = {};
   String name;
 
+  //Builds the regex expression that defines the valid characters for this alphabet
+  String getValidRegex(){
+    String regex = '[';
+    for(String char in alphabet.keys){
+      regex += ' ' + char;
+      if(char.toLowerCase() != char) {
+        regex += ' ' + char.toLowerCase();
+      }
+      if(char.toUpperCase() != char) {
+        regex += ' ' + char.toUpperCase();
+      }
+    }
+    regex += ']';
+    return regex;
+  }
+
   bool containsCharTranslation(String char){
     if(alphabet.containsKey(char.toLowerCase())){
       return true;
