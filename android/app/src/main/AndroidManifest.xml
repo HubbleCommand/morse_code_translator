@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hubblecommand.morse_code_translator">
    <application
-        android:label="morse_code_translator"
-        android:icon="@mipmap/launcher_icon">
+        android:label="Morse Translator"
+        android:icon="@mipmap/launcher_icon">   <!-- android:label is app display name -->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
