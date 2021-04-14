@@ -11,6 +11,10 @@ abstract class Alphabet{
   String getValidRegex(){
     String regex = '[';
     for(String char in alphabet.keys){
+      //Check if special regex character. If it is, need to preface it with the Regex escape
+      if('.+*?^\$()[]{}|\\ ^-]\\.'.contains(char)){
+        char = '\\' + char;
+      }
       regex += ' ' + char;
       if(char.toLowerCase() != char) {
         regex += ' ' + char.toLowerCase();
