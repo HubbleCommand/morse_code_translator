@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:auto_localization/auto_localization.dart';
 
 class AboutWidget extends StatelessWidget {
   static const TextStyle headerStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
@@ -45,12 +46,76 @@ class AboutWidget extends StatelessWidget {
     Text("""\nYou can choose one of the three main Morse alphabets to translate with: the original Morse code, Gerke, and the modern ITU"""),
   ];
 
+  Widget _buildWithPadding(Widget widget){
+    return Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 20), child: widget,);
+  }
+
+  Widget _buildWithPaddingHeader(Widget widget){
+    return Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0), child: widget,);
+  }
+
+  Widget _buildTranslated() {
+    return TranslateBuilder(
+      [
+        "Please visit the ",
+        'Morse Wikipedia page ',
+        'for more information on how morse works.',
+        """This app will help you translate text into morse code, and vice versa.\n""",
+        """It also can flash your morse code with your device's light, play it with your buzzer, or with audio!\n""",
+        """\nTranslating to morse code""",
+        """\nJust type what you want to translate, and tap translate! The Morse Code translation will appear underneath.""",
+        """\nTranslating from morse code""",
+        """\nType the morse code you want translated, simplified with buttons to add standard morse symbols (dots and dashes).""",
+        """\nPlaying morse audiovisually""",
+        """\nJust tap the light, vibrate, and audio icons for the audiovisual representations you want, and hit the play button!""",
+        """\nAudiovisual methods may not work well if you set the element duration too small due to device limitations.""",
+        """\nSettings""",
+        """\nElement duration""",
+        """\nThe duration of Morse signals is defined by element duration. A dot is one element long, while a dash is three elements long. You can set how many milliseconds an element is, which can be needed if you want to use vibrations.""",
+        """\nMorse 'Alphabets'""",
+        """\nYou can choose one of the three main Morse alphabets to translate with: the original Morse code, Gerke, and the modern ITU"""
+      ]
+      , (stringList, isTranslated) {
+      return Column(
+        children: [
+          _buildWithPadding(RichText(
+            text: new TextSpan(
+              children: [
+                new TextSpan(text: stringList[0], style: paraStyle,),
+                new TextSpan(
+                  text: stringList[1], style: new TextStyle(color: Colors.blue),
+                  recognizer: new TapGestureRecognizer()
+                    ..onTap = () {
+                      launch('https://en.wikipedia.org/wiki/Morse_code');
+                    },
+                ),
+                new TextSpan(text: stringList[2], style: paraStyle,),
+              ],
+            ),
+          )),
+          _buildWithPadding(Text(stringList[3], style: paraStyle)),
+          _buildWithPadding(Text(stringList[4], style: paraStyle)),
+          _buildWithPaddingHeader(Text(stringList[5], style: headerStyle)),
+          _buildWithPadding(Text(stringList[6], style: paraStyle)),
+          _buildWithPaddingHeader(Text(stringList[7], style: headerStyle)),
+          _buildWithPadding(Text(stringList[8], style: paraStyle)),
+          _buildWithPaddingHeader(Text(stringList[9], style: headerStyle)),
+          _buildWithPadding(Text(stringList[10], style: paraStyle)),
+          _buildWithPadding(Text(stringList[11], style: paraStyle)),
+          _buildWithPadding(Text(stringList[12], style: headerStyle)),
+          _buildWithPaddingHeader(Text(stringList[13], style: subHeaderStyle)),
+          _buildWithPadding(Text(stringList[14])),
+          _buildWithPaddingHeader(Text(stringList[15], style: subHeaderStyle)),
+          _buildWithPadding(Text(stringList[16])),
+        ],
+      );
+    },);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: kIsWeb ? privacyPolicy + about : about,
-      ),
+      child: _buildTranslated()
     );
   }
 }

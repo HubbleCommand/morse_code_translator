@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:morse_code_translator/widgets/alphabet_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_localization/auto_localization.dart';  //TODO pass the text values, it is bad practice to have an external dependency here... or just ignore?
 
 class SettingsWidget extends StatefulWidget {
   final int elementDuration;
@@ -48,28 +49,30 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           key: _formKey,
           child: Column(
             children: [
-              new TextFormField(
-                controller: new TextEditingController(text: '$elementDuration'),
-                decoration: new InputDecoration(labelText: "Element duration (ms)"),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ], // Only numbers can be entered
-                validator: (value){
-                  if (value.isEmpty) {
-                    return 'Please enter a number';
-                  }
-                  if(int.parse(value) <= 0) {
-                    return 'Please enter a positive non-null value';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  setState(() {
-                    elementDuration = int.parse(value);
-                  });
-                },
-              ),
+              TranslateBuilder(["Element duration (milliseconds)", 'Please enter a number', 'Please enter a positive non-null value'],(stringList, isTranslated){
+                return TextFormField(
+                  controller: new TextEditingController(text: '$elementDuration'),
+                  decoration: new InputDecoration(labelText: stringList[0]),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ], // Only numbers can be entered
+                  validator: (value){
+                    if (value.isEmpty) {
+                      return stringList[1];
+                    }
+                    if(int.parse(value) <= 0) {
+                      return stringList[2];
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      elementDuration = int.parse(value);
+                    });
+                  },
+                );
+              },),
               AlphabetPickerWidget(
                   onAlphabetPickedCallback: (Alphabet alphabet){
                     setState(() {
@@ -90,7 +93,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     prefs.setString('alphabet', alphabet.name);
                   }
                 },
-                child: Text('Apply'),
+                child: TranslateBuilder(["Apply"],(stringList, isTranslated){
+                  return Text(stringList[0]);
+                },),
               )
             ],
           ),

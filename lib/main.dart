@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:auto_localization/auto_localization.dart';  //TODO check if good to also use like described here for future to string: https://stackoverflow.com/questions/60069369/flutter-how-to-convert-futurestring-to-string
+import 'package:shared_preferences/shared_preferences.dart';
+
+//My imports
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/banner_ad.dart';
 import 'package:morse_code_translator/widgets/copy_clipboard.dart';
 import 'package:morse_code_translator/widgets/morse_input.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:morse_code_translator/widgets/about.dart';
 import 'package:morse_code_translator/widgets/settings.dart';
 import 'package:morse_code_translator/controllers/translator.dart';
@@ -15,6 +18,7 @@ import 'package:morse_code_translator/models/alphabet.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  BaseLanguage().setBaseLanguage("en"); //Set default language
 
   runApp(MorseCodeTranslatorApp());
 }
@@ -90,7 +94,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
   }
 
   Widget _buildAlphanumericInput(){
-    return TextFormField(
+    /*return TextFormField(
       controller: textEditingController,
       decoration: InputDecoration(
           labelText: 'Enter text to translate to Morse'
@@ -102,7 +106,22 @@ class _MCTHomePageState extends State<MCTHomePage> {
         }
         return null;  //MUST RETURN NULL
       },
-    );
+    );*/
+    return TranslateBuilder(['Enter text to translate to Morse', 'Please enter some text'],(stringList, isTranslated){
+      return TextFormField(
+        controller: textEditingController,
+        decoration: InputDecoration(
+            labelText: stringList[0]
+        ),
+        inputFormatters: [alphanumericFilter],
+        validator: (value) {
+          if (value.isEmpty) {
+            return stringList[1];
+          }
+          return null;  //MUST RETURN NULL
+        },
+      );
+    },);
   }
 
   Widget _buildMorseInput(bool includeCustomInput){
@@ -127,7 +146,10 @@ class _MCTHomePageState extends State<MCTHomePage> {
             child: new Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: new Text("Alphanumeric", style: TextStyle(color: morseOrNot ? null : selectedTextColor)),
+                  //child: new Text("Alphanumeric", style: TextStyle(color: morseOrNot ? null : selectedTextColor)),
+                  child: TranslateBuilder(["Alphanumeric"],(stringList, isTranslated){
+                    return Text(stringList[0], style: TextStyle(color: morseOrNot ? null : selectedTextColor));
+                  },),
                 )
             ),
           ),
@@ -152,7 +174,10 @@ class _MCTHomePageState extends State<MCTHomePage> {
             child: Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: new Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
+                  //child: new Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
+                  child: TranslateBuilder(["Morse"],(stringList, isTranslated){
+                    return Text(stringList[0], style: TextStyle(color: morseOrNot ? selectedTextColor : null));
+                  },),
                 )
             ),
           ),
@@ -200,7 +225,8 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildTranslateButton({Widget icon = const Text('Translate')}){  //Builds the Widget that translates the user input
+  //Widget _buildTranslateButton({Widget icon = const Text('Translate')}){  //Builds the Widget that translates the user input
+  Widget _buildTranslateButton({@required Widget icon}){
     return ElevatedButton(
         onPressed: (){
           try {
@@ -254,7 +280,11 @@ class _MCTHomePageState extends State<MCTHomePage> {
                   ),
                 ],
               ),),
-              _buildTranslateButton(),
+              _buildTranslateButton(
+                icon: TranslateBuilder(["Translate"],(stringList, isTranslated){
+                  return Text(stringList[0]);
+                },),
+              ),
               _buildResultingText(),
             ]
         ),
@@ -318,54 +348,62 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,//Stops keyboard popping up from resizing screen
         appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.info),
-              onPressed: (){
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context){
-                      return AlertDialog(
-                        title: Text('About this app'),
-                        content: AboutWidget(),
-                      );
-                    }
-                );
-              }
-          ),
-          IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: (){
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context){
-                      return AlertDialog(
-                        title: Text('App Settings'),
-                        content: SettingsWidget(
-                          alphabet: this.alphabet,
-                          elementDuration: this.elementDuration,
-                          onElementDurationCallback: (int elementDuration){
-                            print(elementDuration);
-                            setState(() {
-                              this.elementDuration = elementDuration;
-                            });
-                          },
-                          onAlphabetCallback : (Alphabet alphabet) {
-                            print(alphabet.name);
-                            setState(() {
-                              this.alphabet = alphabet;
-                              print(alphabet.getValidRegex());
-                              this.alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
-                            });
-                          }
-                        ),
-                      );
-                    }
-                );
-              }
-          )
-        ],
+          title: TranslateBuilder([widget.title],(stringList, isTranslated){
+            return Text(stringList[0]);
+          },),
+          actions: [
+            IconButton(
+                icon: Icon(Icons.info),
+                onPressed: (){
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context){
+                        return AlertDialog(
+                          //title: Text('About this app'),
+                          title: TranslateBuilder(['About this app'],(stringList, isTranslated){
+                            return Text(stringList[0]);
+                          },),
+                          content: AboutWidget(),
+                        );
+                      }
+                  );
+                }
+            ),
+            IconButton(
+                icon: Icon(Icons.settings),
+                  onPressed: (){
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            //title: Text('App Settings'),
+                            title: TranslateBuilder(['App Settings'],(stringList, isTranslated){
+                              return Text(stringList[0]);
+                            },),
+                            content: SettingsWidget(
+                              alphabet: this.alphabet,
+                              elementDuration: this.elementDuration,
+                              onElementDurationCallback: (int elementDuration){
+                                print(elementDuration);
+                                setState(() {
+                                  this.elementDuration = elementDuration;
+                                });
+                              },
+                              onAlphabetCallback : (Alphabet alphabet) {
+                                print(alphabet.name);
+                                setState(() {
+                                  this.alphabet = alphabet;
+                                  print(alphabet.getValidRegex());
+                                  this.alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
+                                });
+                              }
+                            ),
+                          );
+                        }
+                    );
+                  }
+            )
+          ],
       ),
       body: OrientationBuilder(
         builder: (context, orientation){
