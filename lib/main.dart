@@ -285,7 +285,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              BannerAdWidget(),
+              //BannerAdWidget(),
               _buildSwitcher(),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,10 +324,10 @@ class _MCTHomePageState extends State<MCTHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RotatedBox( //Rotates ad 90 degrees while widget is being built, so placement is known, unlike with Transform, where the child will be placed ugily overtop
+              /*RotatedBox( //Rotates ad 90 degrees while widget is being built, so placement is known, unlike with Transform, where the child will be placed ugily overtop
                 quarterTurns: 3,
                 child: BannerAdWidget(),
-              ),
+              ),*/
               Expanded(
                 child: Column(
                   children: [
