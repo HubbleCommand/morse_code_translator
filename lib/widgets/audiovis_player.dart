@@ -6,7 +6,7 @@ import 'package:morse_code_translator/controllers/audiovisual_player.dart';
 class AudioVisualPlayerWidget extends StatefulWidget {
   final Function onPlayCallback;
   final int elementDuration;
-  AudioVisualPlayerWidget({Key key, @required this.onPlayCallback, @required this.elementDuration}) : super(key: key);
+  AudioVisualPlayerWidget({super.key, required this.onPlayCallback, required this.elementDuration});
 
   @override
   _AudioVisualPlayerWidgetState createState() => _AudioVisualPlayerWidgetState();
@@ -20,7 +20,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
   final IconData iconPlay = Icons.play_circle_fill_outlined;
   final IconData iconStop = Icons.stop_circle_outlined;
 
-  IconData iconData;
+  late IconData iconData;
 
   _AudioVisualPlayerWidgetState(){
     iconData = iconPlay;

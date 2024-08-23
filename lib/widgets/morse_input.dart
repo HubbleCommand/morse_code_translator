@@ -11,7 +11,7 @@ class MorseInputWidget extends StatefulWidget {
   final TextEditingController morseEditingController;
   final FilteringTextInputFormatter _morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
 
-  MorseInputWidget({Key key, @required this.getValueCallback, @required this.includeCustomInput, @required this.elementDuration, @required this.morseEditingController}) : super(key: key);
+  MorseInputWidget({super.key, required this.getValueCallback, required this.includeCustomInput, required this.elementDuration, required this.morseEditingController});
 
   @override
   _MorseInputWidgetState createState() => _MorseInputWidgetState();
@@ -46,7 +46,7 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
     }
   }
 
-  Widget _buildButton({@required String symbol, @required String value}){
+  Widget _buildButton({required String symbol, required String value}){
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(12.0),
@@ -80,24 +80,36 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
             return null;  //MUST RETURN NULL
           },
         ),*/
-      TranslateBuilder(['Enter Morse Code to translate to alphanumeric', 'Please enter some text'],(stringList, isTranslated){
-        return TextFormField(
-          controller: widget.morseEditingController,
-          decoration: InputDecoration(
-            labelText: stringList[0],
-          ),
-          inputFormatters: [widget._morseCodeCodeFilter],
-          toolbarOptions: ToolbarOptions(
-              copy: true
-          ),
-          validator: (value) {
-            if (value.isEmpty) {
-              return stringList[1];
-            }
-            return null;  //MUST RETURN NULL
-          },
-        );
-      },),
+        /*AutoLocalBuilder(
+          text: ['Enter Morse Code to translate to alphanumeric', 'Please enter some text'],
+          builder: (TranslationWorker tw){
+            return TextFormField(
+              controller: widget.morseEditingController,
+              decoration: InputDecoration(
+                labelText: tw.getById(0),
+              ),
+              inputFormatters: [widget._morseCodeCodeFilter],
+              validator: (value) {
+                if (value != null && value.isEmpty) {
+                  return tw.getById(1);
+                }
+                return null;  //MUST RETURN NULL
+              },
+            );
+      },),*/
+        TextFormField(
+        controller: widget.morseEditingController,
+        decoration: InputDecoration(
+          labelText: "Enter Morse Code to translate to alphanumeric",
+        ),
+        inputFormatters: [widget._morseCodeCodeFilter],
+        validator: (value) {
+          if (value != null && value.isEmpty) {
+            return "Please enter some text";
+          }
+          return null;  //MUST RETURN NULL
+        },
+      ),
 
         widget.includeCustomInput ?
         Wrap(

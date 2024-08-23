@@ -10,20 +10,20 @@ class SettingsWidget extends StatefulWidget {
   final Alphabet alphabet;
   final Function onElementDurationCallback;
   final Function onAlphabetCallback;
-  SettingsWidget({Key key, @required this.elementDuration, @required this.alphabet, @required this.onElementDurationCallback, @required this.onAlphabetCallback}) : super(key: key);
+  SettingsWidget({super.key, required this.elementDuration, required this.alphabet, required this.onElementDurationCallback, required this.onAlphabetCallback});
 
   @override
   _SettingsWidgetState createState() => _SettingsWidgetState(elementDuration: elementDuration, alphabet: alphabet);
 }
 
 class _SettingsWidgetState extends State<SettingsWidget> {
-  int elementDuration;
-  Alphabet alphabet;
+  late int elementDuration;
+  late Alphabet alphabet;
   List<bool> selectedAlphabet = [false, false, false];
 
   final _formKey = GlobalKey<FormState>();
 
-  _SettingsWidgetState({@required elementDuration, @required alphabet}){
+  _SettingsWidgetState({required elementDuration, required alphabet}){
     this.elementDuration = elementDuration ?? 240;
     this.alphabet = alphabet ?? AlphabetITU();
     switch(alphabet.name){
@@ -49,26 +49,26 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           key: _formKey,
           child: Column(
             children: [
-              TranslateBuilder(["Element duration (milliseconds)", 'Please enter a number', 'Please enter a positive non-null value'],(stringList, isTranslated){
+              AutoLocalBuilder(text: ["Element duration (milliseconds)", 'Please enter a number', 'Please enter a positive non-null value'],builder: (TranslationWorker tw){
                 return TextFormField(
                   controller: new TextEditingController(text: '$elementDuration'),
-                  decoration: new InputDecoration(labelText: stringList[0]),
+                  decoration: new InputDecoration(labelText: tw.getById(0)),
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
                   ], // Only numbers can be entered
                   validator: (value){
-                    if (value.isEmpty) {
-                      return stringList[1];
+                    if (value != null && value.isEmpty) {
+                      return tw.getById(1);
                     }
-                    if(int.parse(value) <= 0) {
-                      return stringList[2];
+                    if(value != null && int.parse(value) <= 0) {
+                      return tw.getById(2);
                     }
                     return null;
                   },
                   onSaved: (value) {
                     setState(() {
-                      elementDuration = int.parse(value);
+                      elementDuration = int.parse(value ?? "240");
                     });
                   },
                 );
@@ -83,8 +83,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState?.save();
                     widget.onElementDurationCallback(elementDuration);
                     widget.onAlphabetCallback(alphabet);
                     
@@ -93,8 +93,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     prefs.setString('alphabet', alphabet.name);
                   }
                 },
-                child: TranslateBuilder(["Apply"],(stringList, isTranslated){
-                  return Text(stringList[0]);
+                child: AutoLocalBuilder(text: ["Apply"],builder: (TranslationWorker tw){
+                  return Text(tw.getById(0));
                 },),
               )
             ],

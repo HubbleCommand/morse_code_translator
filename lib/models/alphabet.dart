@@ -5,7 +5,7 @@ class AlphabetError implements Exception {
 
 abstract class Alphabet{
   Map<String, String> alphabet = {};
-  String name;
+  late String name;
 
   //Builds the regex expression that defines the valid characters for this alphabet
   String getValidRegex(){
@@ -37,7 +37,7 @@ abstract class Alphabet{
 
   String getCharTranslation(String char) {
     if(containsCharTranslation(char.toLowerCase())){
-      return alphabet[char.toLowerCase()];
+      return alphabet[char.toLowerCase()]!;
     } else {
       throw new AlphabetError('This character cannot be translated to morse');
     }

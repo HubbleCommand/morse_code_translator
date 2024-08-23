@@ -4,17 +4,17 @@ import 'package:morse_code_translator/models/alphabet.dart';
 class AlphabetPickerWidget extends StatefulWidget {
   final Function onAlphabetPickedCallback;
   final String alphabetName;
-  AlphabetPickerWidget({Key key, @required this.onAlphabetPickedCallback, @required this.alphabetName}) : super(key: key);
+  AlphabetPickerWidget({super.key, required this.onAlphabetPickedCallback, required this.alphabetName});
 
   @override
   _AlphabetPickerWidgetState createState() => _AlphabetPickerWidgetState(alphabetName: alphabetName);
 }
 
 class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
-  List<bool> isSelected;
+  late List<bool> isSelected;
   List<Alphabet> alphabets = [AlphabetOriginal(), AlphabetITU(), AlphabetGerke()];
 
-  _AlphabetPickerWidgetState({@required alphabetName}){
+  _AlphabetPickerWidgetState({required alphabetName}){
     isSelected = List.filled(alphabets.length, false);
 
     if(alphabets.length == isSelected.length){

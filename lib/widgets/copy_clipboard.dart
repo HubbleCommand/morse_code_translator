@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CopyToClipboardWidget extends StatelessWidget{
-  CopyToClipboardWidget({@required this.onTapCopy, @required this.message});
+  CopyToClipboardWidget({required this.onTapCopy, required this.message});
   final Function onTapCopy;
   final String message;
 

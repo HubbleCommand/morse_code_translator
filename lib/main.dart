@@ -18,7 +18,10 @@ import 'package:morse_code_translator/models/alphabet.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  BaseLanguage().setBaseLanguage("en"); //Set default language
+  AutoLocalization.init(
+      appLanguage: 'en',
+      userLanguage: 'en'
+  ); //Set default language
 
   runApp(MorseCodeTranslatorApp());
 }
@@ -37,7 +40,7 @@ class MorseCodeTranslatorApp extends StatelessWidget {
 }
 
 class MCTHomePage extends StatefulWidget {
-  MCTHomePage({Key key, this.title}) : super(key: key);
+  MCTHomePage({super.key, required this.title});
 
   final String title;
 
@@ -107,21 +110,34 @@ class _MCTHomePageState extends State<MCTHomePage> {
         return null;  //MUST RETURN NULL
       },
     );*/
-    return TranslateBuilder(['Enter text to translate to Morse', 'Please enter some text'],(stringList, isTranslated){
+    /*return AutoLocalBuilder(text: ['Enter text to translate to Morse', 'Please enter some text'],builder: (TranslationWorker tw){
       return TextFormField(
         controller: textEditingController,
         decoration: InputDecoration(
-            labelText: stringList[0]
+            labelText: tw.getById(0)
         ),
         inputFormatters: [alphanumericFilter],
         validator: (value) {
-          if (value.isEmpty) {
-            return stringList[1];
+          if (value != null && value.isEmpty) {
+            return tw.getById(1);
           }
           return null;  //MUST RETURN NULL
         },
       );
-    },);
+    },);*/
+    return TextFormField(
+      controller: textEditingController,
+      decoration: InputDecoration(
+          labelText: "Enter text to translate to Morse"
+      ),
+      inputFormatters: [alphanumericFilter],
+      validator: (value) {
+        if (value != null && value.isEmpty) {
+          return "Please enter some text";
+        }
+        return null;  //MUST RETURN NULL
+      },
+    );
   }
 
   Widget _buildMorseInput(bool includeCustomInput){
@@ -146,10 +162,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
             child: new Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  //child: new Text("Alphanumeric", style: TextStyle(color: morseOrNot ? null : selectedTextColor)),
-                  child: TranslateBuilder(["Alphanumeric"],(stringList, isTranslated){
-                    return Text(stringList[0], style: TextStyle(color: morseOrNot ? null : selectedTextColor));
-                  },),
+                  /*child: AutoLocalBuilder(
+                    text: ["Alphanumeric"],
+                    builder: (TranslationWorker tw){
+                      return Text(tw.getById(0), style: TextStyle(color: morseOrNot ? null : selectedTextColor));
+                  },),*/
+                  child: Text("Alphanumeric", style: TextStyle(color: morseOrNot ? null : selectedTextColor)),
                 )
             ),
           ),
@@ -175,9 +193,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
                   //child: new Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
-                  child: TranslateBuilder(["Morse"],(stringList, isTranslated){
-                    return Text(stringList[0], style: TextStyle(color: morseOrNot ? selectedTextColor : null));
-                  },),
+                  child: /*AutoLocalBuilder(
+                    text: ["Morse"],
+                    builder: (TranslationWorker tw){
+                      return Text(tw.getById(0), style: TextStyle(color: morseOrNot ? selectedTextColor : null));
+                  },),*/
+                  Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
                 )
             ),
           ),
@@ -226,7 +247,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
   }
 
   //Widget _buildTranslateButton({Widget icon = const Text('Translate')}){  //Builds the Widget that translates the user input
-  Widget _buildTranslateButton({@required Widget icon}){
+  Widget _buildTranslateButton({required Widget icon}){
     return ElevatedButton(
         onPressed: (){
           try {
@@ -264,7 +285,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              BannerAdWidget(adSize: AdSize.banner),
+              BannerAdWidget(),
               _buildSwitcher(),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,9 +302,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 ],
               ),),
               _buildTranslateButton(
-                icon: TranslateBuilder(["Translate"],(stringList, isTranslated){
-                  return Text(stringList[0]);
-                },),
+                icon: /*AutoLocalBuilder(
+                  text: ["Translate"],
+                  builder: (TranslationWorker tw){
+                    return Text(tw.getById(0));
+                },),*/
+                Text("Translate"),
               ),
               _buildResultingText(),
             ]
@@ -302,7 +326,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
             children: <Widget>[
               RotatedBox( //Rotates ad 90 degrees while widget is being built, so placement is known, unlike with Transform, where the child will be placed ugily overtop
                 quarterTurns: 3,
-                child: BannerAdWidget(adSize: AdSize.banner),
+                child: BannerAdWidget(),
               ),
               Expanded(
                 child: Column(
@@ -348,9 +372,13 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,//Stops keyboard popping up from resizing screen
         appBar: AppBar(
-          title: TranslateBuilder([widget.title],(stringList, isTranslated){
-            return Text(stringList[0]);
-          },),
+          title: /*AutoLocalBuilder(
+            text: [widget.title],
+            builder: (TranslationWorker tw){
+              return Text(tw.getById(0));
+            }
+          ,),*/
+          Text(widget.title),
           actions: [
             IconButton(
                 icon: Icon(Icons.info),
@@ -359,10 +387,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
                       context: context,
                       builder: (BuildContext context){
                         return AlertDialog(
-                          //title: Text('About this app'),
-                          title: TranslateBuilder(['About this app'],(stringList, isTranslated){
-                            return Text(stringList[0]);
-                          },),
+                          title: /*AutoLocalBuilder(
+                            text: ['About this app'],
+                            builder: (TranslationWorker tw){
+                              return Text(tw.getById(0));
+                          },),*/
+                          Text("About this app"),
                           content: AboutWidget(),
                         );
                       }
@@ -376,10 +406,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
                         context: context,
                         builder: (BuildContext context){
                           return AlertDialog(
-                            //title: Text('App Settings'),
-                            title: TranslateBuilder(['App Settings'],(stringList, isTranslated){
-                              return Text(stringList[0]);
-                            },),
+                            title: /*AutoLocalBuilder(
+                              text: ['App Settings'],
+                              builder: (TranslationWorker tw){
+                                return Text(tw.getById(0));
+                            },),*/
+                            Text("App Settings"),
                             content: SettingsWidget(
                               alphabet: this.alphabet,
                               elementDuration: this.elementDuration,

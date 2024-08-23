@@ -1,19 +1,15 @@
 import "dart:typed_data";
-import 'package:flashlight/flashlight.dart';
 import 'package:flutter/services.dart';
+import 'package:torch_light/torch_light.dart';
 import 'package:vibration/vibration.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:wave_generator/wave_generator.dart';
 
 class AudioVisualPlayer{
   List<AudioVisualPlayerDecorator> players = List.empty(growable:true);
-  int elementDurationMs;  //http://www.kent-engineers.com/codespeed.htm
+  late int elementDurationMs;  //http://www.kent-engineers.com/codespeed.htm
 
-  AudioVisualPlayer({this.elementDurationMs}){
-    if(elementDurationMs == null){
-      elementDurationMs = 240;
-    }
-  }
+  AudioVisualPlayer({this.elementDurationMs = 240});
 
   void addPlayer(AudioVisualPlayerDecorator hpDecorator){
     this.players.add(hpDecorator);
@@ -75,9 +71,9 @@ class AudioVisualPlayerLightDecorator extends AudioVisualPlayerDecorator{
   @override
   Future<void> playTone(int duration) async {
     print('Flashing!');
-    Flashlight.lightOn();
+    TorchLight.enableTorch(); //TODO these are futures in the newer package
     await Future.delayed(Duration(milliseconds:duration));
-    Flashlight.lightOff();
+    TorchLight.disableTorch();;
   }
 }
 
@@ -98,7 +94,7 @@ class AudioVisualPlayerVibrateDecorator extends AudioVisualPlayerDecorator{
 
 class AudioVisualPlayerAudioDecorator extends AudioVisualPlayerDecorator{
   ///WARNING !!! If there are weird beeps in between tones, in might just be the computer (which is the case for the tower, frequently beeps when sound comes on & goes off)
-  Soundpool pool = Soundpool(streamType: StreamType.notification);
+  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions(streamType: StreamType.notification));
 
   @override
   Future<void> playTone(int duration) async {
@@ -115,12 +111,12 @@ class AudioVisualPlayerAudioDecorator extends AudioVisualPlayerDecorator{
 
     var generator = WaveGenerator(
       /* sample rate */ 44100,
-        BitDepth.Depth8bit);
+        BitDepth.depth8Bit);
 
     var note = Note(
       /* frequency */ 400,
         /* msDuration */ duration,
-        /* waveform */ Waveform.Square, //Square works best for quick responses to DOT s
+        /* waveform */ Waveform.square, //Square works best for quick responses to DOT s
         /* volume */ 0.5);
 
     List<int> bytes = [];

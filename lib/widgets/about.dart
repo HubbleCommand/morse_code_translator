@@ -55,8 +55,8 @@ class AboutWidget extends StatelessWidget {
   }
 
   Widget _buildTranslated() {
-    return TranslateBuilder(
-      [
+    return AutoLocalBuilder(
+        text: const [
         "Please visit the ",
         'Morse Wikipedia page ',
         'for more information on how morse works.',
@@ -75,38 +75,38 @@ class AboutWidget extends StatelessWidget {
         """\nMorse 'Alphabets'""",
         """\nYou can choose one of the three main Morse alphabets to translate with: the original Morse code, Gerke, and the modern ITU"""
       ]
-      , (stringList, isTranslated) {
+      , builder: (TranslationWorker tw) {
       return Column(
         children: [
           _buildWithPadding(RichText(
             text: new TextSpan(
               children: [
-                new TextSpan(text: stringList[0], style: paraStyle,),
+                new TextSpan(text: tw.getById(0), style: paraStyle,),
                 new TextSpan(
-                  text: stringList[1], style: new TextStyle(color: Colors.blue),
+                  text: tw.getById(1), style: new TextStyle(color: Colors.blue),
                   recognizer: new TapGestureRecognizer()
                     ..onTap = () {
                       launch('https://en.wikipedia.org/wiki/Morse_code');
                     },
                 ),
-                new TextSpan(text: stringList[2], style: paraStyle,),
+                new TextSpan(text: tw.getById(2), style: paraStyle,),
               ],
             ),
           )),
-          _buildWithPadding(Text(stringList[3], style: paraStyle)),
-          _buildWithPadding(Text(stringList[4], style: paraStyle)),
-          _buildWithPaddingHeader(Text(stringList[5], style: headerStyle)),
-          _buildWithPadding(Text(stringList[6], style: paraStyle)),
-          _buildWithPaddingHeader(Text(stringList[7], style: headerStyle)),
-          _buildWithPadding(Text(stringList[8], style: paraStyle)),
-          _buildWithPaddingHeader(Text(stringList[9], style: headerStyle)),
-          _buildWithPadding(Text(stringList[10], style: paraStyle)),
-          _buildWithPadding(Text(stringList[11], style: paraStyle)),
-          _buildWithPadding(Text(stringList[12], style: headerStyle)),
-          _buildWithPaddingHeader(Text(stringList[13], style: subHeaderStyle)),
-          _buildWithPadding(Text(stringList[14])),
-          _buildWithPaddingHeader(Text(stringList[15], style: subHeaderStyle)),
-          _buildWithPadding(Text(stringList[16])),
+          _buildWithPadding(Text(tw.getById(3), style: paraStyle)),
+          _buildWithPadding(Text(tw.getById(4), style: paraStyle)),
+          _buildWithPaddingHeader(Text(tw.getById(5), style: headerStyle)),
+          _buildWithPadding(Text(tw.getById(6), style: paraStyle)),
+          _buildWithPaddingHeader(Text(tw.getById(7), style: headerStyle)),
+          _buildWithPadding(Text(tw.getById(8), style: paraStyle)),
+          _buildWithPaddingHeader(Text(tw.getById(9), style: headerStyle)),
+          _buildWithPadding(Text(tw.getById(10), style: paraStyle)),
+          _buildWithPadding(Text(tw.getById(11), style: paraStyle)),
+          _buildWithPadding(Text(tw.getById(12), style: headerStyle)),
+          _buildWithPaddingHeader(Text(tw.getById(13), style: subHeaderStyle)),
+          _buildWithPadding(Text(tw.getById(14))),
+          _buildWithPaddingHeader(Text(tw.getById(15), style: subHeaderStyle)),
+          _buildWithPadding(Text(tw.getById(16))),
         ],
       );
     },);
