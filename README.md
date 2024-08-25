@@ -28,3 +28,12 @@ Simple two-button interface to type a short or long tone.
 ### AdMob Ads
 - https://flutter.dev/ads
 - https://developers.google.com/admob/flutter/quick-start
+
+### Release
+- https://stackoverflow.com/questions/49874194/flutter-build-apk-on-release-mode-cannot-generate-updated-version
+- https://docs.flutter.dev/deployment/android#configure-signing-in-gradle
+- https://docs.flutter.dev/deployment/android#build-the-app-for-release
+
+Read above articles for configuring keys. If using new key, need to upload as Upload Key to Google Play Console.
+
+Need to run `flutter build appbundle` to generate .aab bundle file for upload.
