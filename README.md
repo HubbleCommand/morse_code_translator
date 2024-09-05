@@ -1,6 +1,8 @@
 # Flutter Morse Code Translator
 Flutter mobile app that can translate text to Morse code.
 
+Available on the Google Play Store [here](https://play.google.com/store/apps/details?id=com.hubblecommand.morse_code_translator).
+
 ## To Morse
 Users can type text, and translate it to:
 - Text representation of Morse Code translation
