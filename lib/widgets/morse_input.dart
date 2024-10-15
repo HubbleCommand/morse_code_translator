@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
-import 'package:auto_localization/auto_localization.dart';  //TODO pass the text values, it is bad practice to have an external dependency here... or just ignore?
 
 class MorseInputWidget extends StatefulWidget {
   final Function getValueCallback;
@@ -64,39 +62,6 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        /*TextFormField(
-          controller: widget.morseEditingController,
-          decoration: InputDecoration(
-            labelText: 'Enter Morse to translate to alphanumeric',
-          ),
-          inputFormatters: [widget._morseCodeCodeFilter],
-          toolbarOptions: ToolbarOptions(
-              copy: true
-          ),
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'Please enter some text';
-            }
-            return null;  //MUST RETURN NULL
-          },
-        ),*/
-        /*AutoLocalBuilder(
-          text: ['Enter Morse Code to translate to alphanumeric', 'Please enter some text'],
-          builder: (TranslationWorker tw){
-            return TextFormField(
-              controller: widget.morseEditingController,
-              decoration: InputDecoration(
-                labelText: tw.getById(0),
-              ),
-              inputFormatters: [widget._morseCodeCodeFilter],
-              validator: (value) {
-                if (value != null && value.isEmpty) {
-                  return tw.getById(1);
-                }
-                return null;  //MUST RETURN NULL
-              },
-            );
-      },),*/
         TextFormField(
         controller: widget.morseEditingController,
         decoration: InputDecoration(

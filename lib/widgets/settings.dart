@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
 import 'package:morse_code_translator/widgets/alphabet_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:auto_localization/auto_localization.dart';  //TODO pass the text values, it is bad practice to have an external dependency here... or just ignore?
 
 class SettingsWidget extends StatefulWidget {
   final int elementDuration;
@@ -44,35 +43,32 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        //padding: const EdgeInsets.all(40.0),
         child: new Form(
           key: _formKey,
           child: Column(
             children: [
-              AutoLocalBuilder(text: ["Element duration (milliseconds)", 'Please enter a number', 'Please enter a positive non-null value'],builder: (TranslationWorker tw){
-                return TextFormField(
-                  controller: new TextEditingController(text: '$elementDuration'),
-                  decoration: new InputDecoration(labelText: tw.getById(0)),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ], // Only numbers can be entered
-                  validator: (value){
-                    if (value != null && value.isEmpty) {
-                      return tw.getById(1);
-                    }
-                    if(value != null && int.parse(value) <= 0) {
-                      return tw.getById(2);
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    setState(() {
-                      elementDuration = int.parse(value ?? "240");
-                    });
-                  },
-                );
-              },),
+              TextFormField(
+                controller: new TextEditingController(text: '$elementDuration'),
+                decoration: new InputDecoration(labelText: "Element duration (milliseconds)"),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ], // Only numbers can be entered
+                validator: (value){
+                  if (value != null && value.isEmpty) {
+                    return "Please enter a number";
+                  }
+                  if(value != null && int.parse(value) <= 0) {
+                    return "Please enter a positive non-null value";
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  setState(() {
+                    elementDuration = int.parse(value ?? "240");
+                  });
+                },
+              ),
               AlphabetPickerWidget(
                   onAlphabetPickedCallback: (Alphabet alphabet){
                     setState(() {
@@ -93,9 +89,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     prefs.setString('alphabet', alphabet.name);
                   }
                 },
-                child: AutoLocalBuilder(text: ["Apply"],builder: (TranslationWorker tw){
-                  return Text(tw.getById(0));
-                },),
+                child: Text("Apply"),
               )
             ],
           ),

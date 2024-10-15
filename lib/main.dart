@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:auto_localization/auto_localization.dart';  //TODO check if good to also use like described here for future to string: https://stackoverflow.com/questions/60069369/flutter-how-to-convert-futurestring-to-string
 import 'package:shared_preferences/shared_preferences.dart';
 
-//My imports
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/banner_ad.dart';
 import 'package:morse_code_translator/widgets/copy_clipboard.dart';
@@ -18,10 +15,6 @@ import 'package:morse_code_translator/models/alphabet.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  AutoLocalization.init(
-      appLanguage: 'en',
-      userLanguage: 'en'
-  ); //Set default language
 
   runApp(MorseCodeTranslatorApp());
 }
@@ -97,34 +90,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
   }
 
   Widget _buildAlphanumericInput(){
-    /*return TextFormField(
-      controller: textEditingController,
-      decoration: InputDecoration(
-          labelText: 'Enter text to translate to Morse'
-      ),
-      inputFormatters: [alphanumericFilter],
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'Please enter some text';
-        }
-        return null;  //MUST RETURN NULL
-      },
-    );*/
-    /*return AutoLocalBuilder(text: ['Enter text to translate to Morse', 'Please enter some text'],builder: (TranslationWorker tw){
-      return TextFormField(
-        controller: textEditingController,
-        decoration: InputDecoration(
-            labelText: tw.getById(0)
-        ),
-        inputFormatters: [alphanumericFilter],
-        validator: (value) {
-          if (value != null && value.isEmpty) {
-            return tw.getById(1);
-          }
-          return null;  //MUST RETURN NULL
-        },
-      );
-    },);*/
     return TextFormField(
       controller: textEditingController,
       decoration: InputDecoration(
@@ -162,11 +127,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
             child: new Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  /*child: AutoLocalBuilder(
-                    text: ["Alphanumeric"],
-                    builder: (TranslationWorker tw){
-                      return Text(tw.getById(0), style: TextStyle(color: morseOrNot ? null : selectedTextColor));
-                  },),*/
                   child: Text("Alphanumeric", style: TextStyle(color: morseOrNot ? null : selectedTextColor)),
                 )
             ),
@@ -192,13 +152,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
             child: Center(
                 child: new Padding(
                   padding: EdgeInsets.all(8.0),
-                  //child: new Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
-                  child: /*AutoLocalBuilder(
-                    text: ["Morse"],
-                    builder: (TranslationWorker tw){
-                      return Text(tw.getById(0), style: TextStyle(color: morseOrNot ? selectedTextColor : null));
-                  },),*/
-                  Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
+                  child: Text("Morse", style: TextStyle(color: morseOrNot ? selectedTextColor : null)),
                 )
             ),
           ),
@@ -246,7 +200,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  //Widget _buildTranslateButton({Widget icon = const Text('Translate')}){  //Builds the Widget that translates the user input
   Widget _buildTranslateButton({required Widget icon}){
     return ElevatedButton(
         onPressed: (){
@@ -302,12 +255,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 ],
               ),),
               _buildTranslateButton(
-                icon: /*AutoLocalBuilder(
-                  text: ["Translate"],
-                  builder: (TranslationWorker tw){
-                    return Text(tw.getById(0));
-                },),*/
-                Text("Translate"),
+                icon: Text("Translate"),
               ),
               _buildResultingText(),
             ]
@@ -372,13 +320,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,//Stops keyboard popping up from resizing screen
         appBar: AppBar(
-          title: /*AutoLocalBuilder(
-            text: [widget.title],
-            builder: (TranslationWorker tw){
-              return Text(tw.getById(0));
-            }
-          ,),*/
-          Text(widget.title),
+          title: Text(widget.title),
           actions: [
             IconButton(
                 icon: Icon(Icons.info),
@@ -387,12 +329,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                       context: context,
                       builder: (BuildContext context){
                         return AlertDialog(
-                          title: /*AutoLocalBuilder(
-                            text: ['About this app'],
-                            builder: (TranslationWorker tw){
-                              return Text(tw.getById(0));
-                          },),*/
-                          Text("About this app"),
+                          title: Text("About this app"),
                           content: AboutWidget(),
                         );
                       }
@@ -406,12 +343,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                         context: context,
                         builder: (BuildContext context){
                           return AlertDialog(
-                            title: /*AutoLocalBuilder(
-                              text: ['App Settings'],
-                              builder: (TranslationWorker tw){
-                                return Text(tw.getById(0));
-                            },),*/
-                            Text("App Settings"),
+                            title: Text("App Settings"),
                             content: SettingsWidget(
                               alphabet: this.alphabet,
                               elementDuration: this.elementDuration,

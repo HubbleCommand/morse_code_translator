@@ -32,9 +32,6 @@ dependencies:
   # For opening pages
   url_launcher: ^6.3.0
 
-  # For auto translation
-  auto_localization: ^2.0.2
-
   # Ads
   google_mobile_ads: ^3.1.0
 
@@ -45,7 +42,6 @@ dependencies:
   vibration: ^2.0.0
   torch_light : ^1.1.0
   soundpool: ^2.3.0
-  #wave_generator: ^0.1.0
   wave_generator:
     git:
       url: https://github.com/patchandthat/wave-generator.git
