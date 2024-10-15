@@ -94,6 +94,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
                 for(int i = 0; i < morseToPlay.length; i++){
                   if(this.isPlaying && this.mounted){
                     await audioVisualPlayer.playTone(morseToPlay[i]);
+                    await Future.delayed(Duration(milliseconds: widget.elementDuration));
                   } else {
                     break;  //Quits when isPlaying is set to false elsewhere in the app!
                   }
