@@ -46,6 +46,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         child: new Form(
           key: _formKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: new TextEditingController(text: '$elementDuration'),
@@ -87,6 +88,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setInt('elementDuration', elementDuration);
                     prefs.setString('alphabet', alphabet.name);
+                    Navigator.of(context).pop();
                   }
                 },
                 child: Text("Apply"),
