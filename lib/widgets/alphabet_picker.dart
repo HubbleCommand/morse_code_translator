@@ -1,30 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:morse_code_translator/models/alphabet.dart';
+import 'package:morse_code_translator/widgets/settings_container.dart';
 
 class AlphabetPickerWidget extends StatefulWidget {
-  final Function onAlphabetPickedCallback;
-  final String alphabetName;
-  AlphabetPickerWidget({super.key, required this.onAlphabetPickedCallback, required this.alphabetName});
+  AlphabetPickerWidget({super.key});
 
   @override
-  _AlphabetPickerWidgetState createState() => _AlphabetPickerWidgetState(alphabetName: alphabetName);
+  _AlphabetPickerWidgetState createState() => _AlphabetPickerWidgetState();
 }
 
 class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
-  late List<bool> isSelected;
-  List<Alphabet> alphabets = [AlphabetOriginal(), AlphabetITU(), AlphabetGerke()];
-
-  _AlphabetPickerWidgetState({required alphabetName}){
-    isSelected = List.filled(alphabets.length, false);
-
-    if(alphabets.length == isSelected.length){
-      for(int index = 0; index < alphabets.length; index++){
-        if(alphabets[index].name == alphabetName){
-          isSelected[index] = true;
-        }
-      }
-    }
-  }
+  final List<bool> isSelected = List.filled(3, false);
+  final List<Alphabet> alphabets = [AlphabetOriginal(), AlphabetITU(), AlphabetGerke()];
 
   _buildButtons(alphabets){
     List<Widget> alphabetButtons = [];
@@ -48,6 +35,16 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsContainer = SettingsContainer.of(context);
+
+    if(alphabets.length == isSelected.length){
+      for(int index = 0; index < alphabets.length; index++){
+        if(alphabets[index].name == settingsContainer.settingsService.alphabet.name){
+          isSelected[index] = true;
+        }
+      }
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -57,7 +54,6 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
           children: _buildButtons(alphabets),
           onPressed: (int index) {
             setState(() {
-              //isSelected[index] = !isSelected[index];
               for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++) {
                 if (buttonIndex == index) {
                   isSelected[buttonIndex] = true;
@@ -65,7 +61,7 @@ class _AlphabetPickerWidgetState extends State<AlphabetPickerWidget> {
                   isSelected[buttonIndex] = false;
                 }
               }
-              widget.onAlphabetPickedCallback(alphabets[index]);
+              settingsContainer.settingsService.setAlphabet(alphabets[index]);
             });
           },
           isSelected: isSelected,

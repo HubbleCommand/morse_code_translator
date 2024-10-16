@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:morse_code_translator/services/settings_service.dart';
+import 'package:morse_code_translator/widgets/settings_container.dart';
 
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/banner_ad.dart';
@@ -10,7 +11,6 @@ import 'package:morse_code_translator/widgets/morse_input.dart';
 import 'package:morse_code_translator/widgets/about.dart';
 import 'package:morse_code_translator/widgets/settings.dart';
 import 'package:morse_code_translator/controllers/translator.dart';
-import 'package:morse_code_translator/models/alphabet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,12 +22,15 @@ void main() {
 class MorseCodeTranslatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Morse Code Translator',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MCTHomePage(title: 'Morse Code Translator'),
+    return SettingsContainer(
+        settingsService: SettingsService(),
+        child: MaterialApp(
+          title: 'Morse Code Translator',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: MCTHomePage(title: 'Morse Code Translator'),
+        )
     );
   }
 }
@@ -42,9 +45,6 @@ class MCTHomePage extends StatefulWidget {
 }
 
 class _MCTHomePageState extends State<MCTHomePage> {
-  //Need default values...
-  int elementDuration = 240;                //The user-defined duration of each Morse element (in milliseconds)
-  Alphabet alphabet = AlphabetITU();        //User-chosen Morse alphabet used to translate
   bool morseOrNot = false;                  //Whether or not we are translating morse to alpha
   String _translatedText = '';              //The translated text, no matter the type (morse or alphanumeric), needs a default value or shows null
   final _formKey = GlobalKey<FormState>();  //The form key
@@ -55,7 +55,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
 
   //Controllers & formatters for alphanumeric input
   //AlphanumericFilter needs to take in any valid symbol OF THE CHOSEN ALPHABET
-  FilteringTextInputFormatter alphanumericFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));  //NOT final as we want to be able to change it to match a user chosen alphabet
   TextEditingController textEditingController = TextEditingController();
 
   //Controllers & formatters for morse input
@@ -67,35 +66,13 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return morseInputValue;
   };
 
-  @override
-  void initState() {
-    super.initState();
-    //Get the user-saved preferences from other sessions
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
-      this.elementDuration = prefs.getInt('elementDuration') ?? 240;
-
-      switch(prefs.getString('alphabet') ?? 'ITU'){
-        case 'ITU' : {this.alphabet = AlphabetITU();}
-        break;
-        case 'Original' : {this.alphabet = AlphabetOriginal();}
-        break;
-        case 'Gerke' : {this.alphabet = AlphabetGerke();}
-        break;
-        default : {this.alphabet = AlphabetITU();}
-        break;
-      }
-      print(alphabet.getValidRegex());
-      alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
-    });
-  }
-
   Widget _buildAlphanumericInput(){
     return TextFormField(
       controller: textEditingController,
       decoration: InputDecoration(
           labelText: "Enter text to translate to Morse"
       ),
-      inputFormatters: [alphanumericFilter],
+      inputFormatters: [settingsContainer.settingsService.alphanumericFilter],
       validator: (value) {
         if (value != null && value.isEmpty) {
           return "Please enter some text";
@@ -109,7 +86,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return MorseInputWidget(
       getValueCallback: getMorseInputValue,
       includeCustomInput: includeCustomInput,
-      elementDuration: elementDuration,
+      elementDuration: settingsContainer.settingsService.elementDuration,
       morseEditingController: morseEditingController,
     );
   }
@@ -135,7 +112,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
         IconButton(
           icon: Icon(Icons.sync_alt),
           onPressed: (){
-            print('Applying new style...');
             print(morseOrNot);
             setState(() {
               morseOrNot = ! morseOrNot;
@@ -190,7 +166,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
             ],
           ),
           morseOrNot ? Container() : AudioVisualPlayerWidget(
-            elementDuration: elementDuration,
+            elementDuration: settingsContainer.settingsService.elementDuration,
             onPlayCallback: (){
               return _translatedText;
             },
@@ -209,9 +185,9 @@ class _MCTHomePageState extends State<MCTHomePage> {
 
             String temp;
             if(morseOrNot){
-              temp = Translator.translateFromMorse(morseEditingController.text, alphabet);
+              temp = Translator.translateFromMorse(morseEditingController.text, settingsContainer.settingsService.alphabet);
             } else {
-              temp = Translator.translateToMorse(textEditingController.text, alphabet);
+              temp = Translator.translateToMorse(textEditingController.text, settingsContainer.settingsService.alphabet);
             }
 
             setState(() {
@@ -315,8 +291,12 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
+  late SettingsContainer settingsContainer;
+
   @override
   Widget build(BuildContext context) {
+    settingsContainer = SettingsContainer.of(context);
+
     return Scaffold(
         resizeToAvoidBottomInset: false,//Stops keyboard popping up from resizing screen
         appBar: AppBar(
@@ -344,24 +324,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                         builder: (BuildContext context){
                           return AlertDialog(
                             title: Text("App Settings"),
-                            content: SettingsWidget(
-                              alphabet: this.alphabet,
-                              elementDuration: this.elementDuration,
-                              onElementDurationCallback: (int elementDuration){
-                                print(elementDuration);
-                                setState(() {
-                                  this.elementDuration = elementDuration;
-                                });
-                              },
-                              onAlphabetCallback : (Alphabet alphabet) {
-                                print(alphabet.name);
-                                setState(() {
-                                  this.alphabet = alphabet;
-                                  print(alphabet.getValidRegex());
-                                  this.alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
-                                });
-                              }
-                            ),
+                            content: SettingsWidget(),
                           );
                         }
                     );
@@ -369,15 +332,22 @@ class _MCTHomePageState extends State<MCTHomePage> {
             )
           ],
       ),
-      body: OrientationBuilder(
-        builder: (context, orientation){
-          if(orientation == Orientation.landscape){
-            return _buildLandscape();
-          } else {
-            return _buildPortrait();
-          }
+      body:
+      ListenableBuilder(
+        listenable: settingsContainer.settingsService,
+        builder: (BuildContext context, Widget? child){
+          return OrientationBuilder(
+            builder: (context, orientation){
+              if(orientation == Orientation.landscape){
+                return _buildLandscape();
+              } else {
+                return _buildPortrait();
+              }
+            },
+          );
         },
       )
+
     );
   }
 }
