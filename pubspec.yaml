@@ -47,6 +47,9 @@ dependencies:
       url: https://github.com/patchandthat/wave-generator.git
       ref: fae9491f7f6b9a92116fcd0a11545d359d308fbd
 
+  preftils:
+    path: ../preftils_fl
+
 dev_dependencies:
   flutter_launcher_icons: "^0.13.0"
 
