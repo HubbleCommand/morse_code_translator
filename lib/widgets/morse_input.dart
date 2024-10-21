@@ -68,7 +68,7 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
           decoration: InputDecoration(
             labelText: "Enter Morse Code to translate to alphanumeric",
           ),
-          inputFormatters: [settingsContainer.settingsService.alphabetFilter],
+          inputFormatters: [Alphabet.morseCodeCodeFilter],
           validator: (value) {
             if (value != null && value.isEmpty) {
               return "Please enter some text";

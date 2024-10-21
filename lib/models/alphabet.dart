@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:preftils/preftils.dart';
 
 class AlphabetError implements Exception {
@@ -8,6 +9,8 @@ class AlphabetError implements Exception {
 abstract class Alphabet implements Codable{
   Map<String, String> alphabet = {};
   late String name;
+
+  static final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
 
   @override
   Codable decode(String data) {
