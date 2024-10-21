@@ -48,23 +48,21 @@ class _MCTHomePageState extends State<MCTHomePage> {
   bool morseOrNot = false;                  //Whether or not we are translating morse to alpha
   String _translatedText = '';              //The translated text, no matter the type (morse or alphanumeric), needs a default value or shows null
   final _formKey = GlobalKey<FormState>();  //The form key
+  final bool _buildCustomMorseInput = false;
 
   //Styles for switch
   final MaterialColor selectedAreaColor = Colors.blue;  //The background color if the item is selected
   final Color selectedTextColor = Colors.white;
 
   //Controllers & formatters for alphanumeric input
-  //AlphanumericFilter needs to take in any valid symbol OF THE CHOSEN ALPHABET
   final TextEditingController textEditingController = TextEditingController();
 
   //Controllers & formatters for morse input
-  final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
   final TextEditingController morseEditingController = TextEditingController();
 
-  //Callback function used to sometimes send value to / from morseInputWidget (?)
-  final Function getMorseInputValue = (String morseInputValue){
-    return morseInputValue;
-  };
+  void _translate() {
+
+  }
 
   Widget _buildAlphanumericInput(){
     return TextFormField(
@@ -82,10 +80,9 @@ class _MCTHomePageState extends State<MCTHomePage> {
     );
   }
 
-  Widget _buildMorseInput(bool includeCustomInput){
+  Widget _buildMorseInput(){
     return MorseInputWidget(
-      getValueCallback: getMorseInputValue,
-      includeCustomInput: includeCustomInput,
+      includeCustomInput: _buildCustomMorseInput,
       morseEditingController: morseEditingController,
     );
   }
@@ -178,26 +175,19 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return ElevatedButton(
         onPressed: (){
           try {
-            print('Translate to morse');
-            print('Value: ' + textEditingController.text);
-
-            String temp;
-            if(morseOrNot){
-              temp = Translator.translateFromMorse(morseEditingController.text, settingsContainer.settingsService.alphabet);
-            } else {
-              temp = Translator.translateToMorse(textEditingController.text, settingsContainer.settingsService.alphabet);
-            }
+            print('Translate to morse, value: ' + textEditingController.text);
 
             setState(() {
-              _translatedText = temp;
+              _translatedText = morseOrNot ?
+                Translator.translateFromMorse(morseEditingController.text, settingsContainer.settingsService.alphabet) :
+                Translator.translateToMorse(textEditingController.text, settingsContainer.settingsService.alphabet);
             });
           } on TranslationError catch (e) {
             setState(() {
               _translatedText = '';
             });
             print(e.cause);
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Malformed text : ' + e.cause)));
           }
         },
         child: icon
@@ -218,7 +208,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: morseOrNot ? _buildMorseInput(true) : _buildAlphanumericInput(),
+                    child: morseOrNot ? _buildMorseInput() : _buildAlphanumericInput(),
                   ),
                   CopyToClipboardWidget(
                     message: 'Text copied to clipboard',
@@ -246,10 +236,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              /*RotatedBox( //Rotates ad 90 degrees while widget is being built, so placement is known, unlike with Transform, where the child will be placed ugily overtop
-                quarterTurns: 3,
-                child: BannerAdWidget(),
-              ),*/
               Expanded(
                 child: Column(
                   children: [
@@ -263,7 +249,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: morseOrNot ? _buildMorseInput(true) : _buildAlphanumericInput(),
+                                    child: morseOrNot ? _buildMorseInput() : _buildAlphanumericInput(),
                                   ),
                                   CopyToClipboardWidget(
                                     message: 'Text copied to clipboard',

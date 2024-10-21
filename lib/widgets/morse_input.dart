@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
 import 'package:morse_code_translator/widgets/settings_container.dart';
 
+import '../models/alphabet.dart';
+
 class MorseInputWidget extends StatefulWidget {
-  final Function getValueCallback;
   final bool includeCustomInput;
   final TextEditingController morseEditingController;
 
-  MorseInputWidget({super.key, required this.getValueCallback, required this.includeCustomInput, required this.morseEditingController});
+  MorseInputWidget({super.key, required this.includeCustomInput, required this.morseEditingController});
 
   @override
   _MorseInputWidgetState createState() => _MorseInputWidgetState();
