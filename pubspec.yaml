@@ -33,7 +33,7 @@ dependencies:
   url_launcher: ^6.3.0
 
   # Ads
-  google_mobile_ads: ^3.1.0
+  google_mobile_ads: ^5.2.0
 
   # Storing settings
   shared_preferences: ^2.3.2
@@ -51,7 +51,7 @@ dependencies:
     path: ../preftils_fl
 
 dev_dependencies:
-  flutter_launcher_icons: "^0.13.0"
+  flutter_launcher_icons: ^0.14.1
 
   flutter_test:
     sdk: flutter
