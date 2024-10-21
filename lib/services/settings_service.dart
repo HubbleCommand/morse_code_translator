@@ -8,7 +8,7 @@ import '../models/alphabet.dart';
 class SettingsService extends ChangeNotifier {
   int elementDuration = 240;                //The user-defined duration of each Morse element (in milliseconds)
   Alphabet alphabet = AlphabetITU();
-  FilteringTextInputFormatter alphanumericFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+  FilteringTextInputFormatter alphabetFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
 
   SettingsService() {
     _loadFromPreferences();
@@ -44,7 +44,7 @@ class SettingsService extends ChangeNotifier {
 
   void setAlphabet(Alphabet alphabet) {
     this.alphabet = alphabet;
-    alphanumericFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
+    alphabetFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
     notifyListeners();
   }
 

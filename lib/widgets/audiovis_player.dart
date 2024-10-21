@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_code_translator/controllers/audiovisual_player.dart';
+import 'package:morse_code_translator/widgets/settings_container.dart';
 
 class AudioVisualPlayerWidget extends StatefulWidget {
   final Function onPlayCallback;
-  final int elementDuration;
-  AudioVisualPlayerWidget({super.key, required this.onPlayCallback, required this.elementDuration});
+  AudioVisualPlayerWidget({super.key, required this.onPlayCallback});
 
   @override
   _AudioVisualPlayerWidgetState createState() => _AudioVisualPlayerWidgetState();
@@ -29,6 +29,8 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsContainer = SettingsContainer.of(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -65,7 +67,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
                 return;
               }
 
-              AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer(elementDurationMs: widget.elementDuration);
+              AudioVisualPlayer audioVisualPlayer = new AudioVisualPlayer(elementDurationMs: settingsContainer.settingsService.elementDuration);
 
               if(isSelected[0]){
                 print('Turning on light...');
@@ -93,7 +95,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
                 for(int i = 0; i < morseToPlay.length; i++){
                   if(this.isPlaying && this.mounted){
                     await audioVisualPlayer.playTone(morseToPlay[i]);
-                    await Future.delayed(Duration(milliseconds: widget.elementDuration));
+                    await Future.delayed(Duration(milliseconds: settingsContainer.settingsService.elementDuration));
                   } else {
                     break;  //Quits when isPlaying is set to false elsewhere in the app!
                   }

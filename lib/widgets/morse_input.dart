@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
+import 'package:morse_code_translator/widgets/settings_container.dart';
 
 class MorseInputWidget extends StatefulWidget {
   final Function getValueCallback;
   final bool includeCustomInput;
-  final int elementDuration;
   final TextEditingController morseEditingController;
-  final FilteringTextInputFormatter _morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
 
-  MorseInputWidget({super.key, required this.getValueCallback, required this.includeCustomInput, required this.elementDuration, required this.morseEditingController});
+  MorseInputWidget({super.key, required this.getValueCallback, required this.includeCustomInput, required this.morseEditingController});
 
   @override
   _MorseInputWidgetState createState() => _MorseInputWidgetState();
@@ -60,22 +58,23 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsContainer = SettingsContainer.of(context);
+
     return Column(
       children: [
         TextFormField(
-        controller: widget.morseEditingController,
-        decoration: InputDecoration(
-          labelText: "Enter Morse Code to translate to alphanumeric",
+          controller: widget.morseEditingController,
+          decoration: InputDecoration(
+            labelText: "Enter Morse Code to translate to alphanumeric",
+          ),
+          inputFormatters: [settingsContainer.settingsService.alphabetFilter],
+          validator: (value) {
+            if (value != null && value.isEmpty) {
+              return "Please enter some text";
+            }
+            return null;  //MUST RETURN NULL
+          },
         ),
-        inputFormatters: [widget._morseCodeCodeFilter],
-        validator: (value) {
-          if (value != null && value.isEmpty) {
-            return "Please enter some text";
-          }
-          return null;  //MUST RETURN NULL
-        },
-      ),
-
         widget.includeCustomInput ?
         Wrap(
           children: [
@@ -86,7 +85,6 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
           ],
         ) : Container(),
         AudioVisualPlayerWidget(
-          elementDuration: widget.elementDuration,
           onPlayCallback: (){
             return widget.morseEditingController.text;
           },

@@ -50,19 +50,19 @@ class _MCTHomePageState extends State<MCTHomePage> {
   final _formKey = GlobalKey<FormState>();  //The form key
 
   //Styles for switch
-  MaterialColor selectedAreaColor = Colors.blue;  //The background color if the item is selected
-  Color selectedTextColor = Colors.white;
+  final MaterialColor selectedAreaColor = Colors.blue;  //The background color if the item is selected
+  final Color selectedTextColor = Colors.white;
 
   //Controllers & formatters for alphanumeric input
   //AlphanumericFilter needs to take in any valid symbol OF THE CHOSEN ALPHABET
-  TextEditingController textEditingController = TextEditingController();
+  final TextEditingController textEditingController = TextEditingController();
 
   //Controllers & formatters for morse input
   final FilteringTextInputFormatter morseCodeCodeFilter = FilteringTextInputFormatter.allow(RegExp("[. -]"));
-  TextEditingController morseEditingController = TextEditingController();
+  final TextEditingController morseEditingController = TextEditingController();
 
   //Callback function used to sometimes send value to / from morseInputWidget (?)
-  Function getMorseInputValue = (String morseInputValue){
+  final Function getMorseInputValue = (String morseInputValue){
     return morseInputValue;
   };
 
@@ -72,7 +72,7 @@ class _MCTHomePageState extends State<MCTHomePage> {
       decoration: InputDecoration(
           labelText: "Enter text to translate to Morse"
       ),
-      inputFormatters: [settingsContainer.settingsService.alphanumericFilter],
+      inputFormatters: [settingsContainer.settingsService.alphabetFilter],
       validator: (value) {
         if (value != null && value.isEmpty) {
           return "Please enter some text";
@@ -86,7 +86,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
     return MorseInputWidget(
       getValueCallback: getMorseInputValue,
       includeCustomInput: includeCustomInput,
-      elementDuration: settingsContainer.settingsService.elementDuration,
       morseEditingController: morseEditingController,
     );
   }
@@ -166,7 +165,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
             ],
           ),
           morseOrNot ? Container() : AudioVisualPlayerWidget(
-            elementDuration: settingsContainer.settingsService.elementDuration,
             onPlayCallback: (){
               return _translatedText;
             },
@@ -347,7 +345,6 @@ class _MCTHomePageState extends State<MCTHomePage> {
           );
         },
       )
-
     );
   }
 }
