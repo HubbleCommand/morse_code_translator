@@ -1,11 +1,32 @@
+import 'package:preftils/preftils.dart';
+
 class AlphabetError implements Exception {
   String cause;
   AlphabetError(this.cause);
 }
 
-abstract class Alphabet{
+abstract class Alphabet implements Codable{
   Map<String, String> alphabet = {};
   late String name;
+
+  @override
+  Codable decode(String data) {
+    switch (data) {
+      case 'ITU':
+        return AlphabetITU();
+      case 'Original':
+        return AlphabetOriginal();
+      case 'Gerke':
+        return AlphabetGerke();
+      default:
+        return AlphabetITU();
+    }
+  }
+
+  @override
+  String encode() {
+    return name;
+  }
 
   //Builds the regex expression that defines the valid characters for this alphabet
   String getValidRegex(){
