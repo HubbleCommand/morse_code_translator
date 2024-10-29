@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:morse_code_translator/widgets/audiovis_player.dart';
-import 'package:morse_code_translator/widgets/settings_container.dart';
+import 'package:morse_code_translator/widgets/state_container.dart';
 
 import '../models/alphabet.dart';
+import '../services/state_service.dart';
 
 class MorseInputWidget extends StatefulWidget {
-  final bool includeCustomInput;
-  final TextEditingController morseEditingController;
-
-  MorseInputWidget({super.key, required this.includeCustomInput, required this.morseEditingController});
+  MorseInputWidget({super.key});
 
   @override
   _MorseInputWidgetState createState() => _MorseInputWidgetState();
 }
 
 class _MorseInputWidgetState extends State<MorseInputWidget> {
+  late final StateService stateService;
+
   String _insertSymbolAtLocation(int index, String text, String symbol){
     print(index);
     if(index <= 0){
@@ -29,15 +29,15 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
   }
 
   void _doInsertSymbol(String symbol){
-    int currentCursorPosition = widget.morseEditingController.selection.start;
-    widget.morseEditingController.text = _insertSymbolAtLocation(currentCursorPosition, widget.morseEditingController.text, symbol);
+    int currentCursorPosition = stateService.morseEditingController.selection.start;
+    stateService.morseEditingController.text = _insertSymbolAtLocation(currentCursorPosition, stateService.morseEditingController.text, symbol);
 
     if(currentCursorPosition <= 0){//Handles if selection index is -1, i.e. if the user hasn't touched the TextField yet
-      widget.morseEditingController.selection = TextSelection.fromPosition(
+      stateService.morseEditingController.selection = TextSelection.fromPosition(
         TextPosition(offset: symbol.length),
       );
     } else {
-      widget.morseEditingController.selection = TextSelection.fromPosition(
+      stateService.morseEditingController.selection = TextSelection.fromPosition(
         TextPosition(offset: currentCursorPosition + symbol.length),
       );
     }
@@ -59,12 +59,12 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsContainer = SettingsContainer.of(context);
+    stateService = StateContainer.of(context).stateService;
 
     return Column(
       children: [
         TextFormField(
-          controller: widget.morseEditingController,
+          controller: stateService.morseEditingController,
           decoration: InputDecoration(
             labelText: "Enter Morse Code to translate to alphanumeric",
           ),
@@ -76,7 +76,7 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
             return null;  //MUST RETURN NULL
           },
         ),
-        widget.includeCustomInput ?
+        stateService.buildCustomMorseInput ?
         Wrap(
           children: [
             _buildButton(symbol: '.', value: '.'),
@@ -85,11 +85,7 @@ class _MorseInputWidgetState extends State<MorseInputWidget> {
             _buildButton(symbol:'WORD SPACE', value: '       '),
           ],
         ) : Container(),
-        AudioVisualPlayerWidget(
-          onPlayCallback: (){
-            return widget.morseEditingController.text;
-          },
-        ),
+        AudioVisualPlayerWidget(),
       ],
     );
   }

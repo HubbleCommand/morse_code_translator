@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_code_translator/controllers/audiovisual_player.dart';
+import 'package:morse_code_translator/services/state_service.dart';
 import 'package:morse_code_translator/widgets/settings_container.dart';
+import 'package:morse_code_translator/widgets/state_container.dart';
 
 class AudioVisualPlayerWidget extends StatefulWidget {
-  final Function onPlayCallback;
-  AudioVisualPlayerWidget({super.key, required this.onPlayCallback});
+  AudioVisualPlayerWidget({super.key});
 
   @override
   _AudioVisualPlayerWidgetState createState() => _AudioVisualPlayerWidgetState();
@@ -30,6 +31,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     final settingsContainer = SettingsContainer.of(context);
+    final StateService stateService = StateContainer.of(context).stateService;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -58,8 +60,7 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
                 iconData = iconPlay;
               });
             } else {
-              String morseToPlay = widget.onPlayCallback();
-              print('Preparing to play morse with string: $morseToPlay');
+              String morseToPlay = !stateService.toMorse ? stateService.translated : stateService.morseEditingController.text;
               if(morseToPlay.isEmpty) {
                 ScaffoldMessenger
                     .of(context)
@@ -84,8 +85,6 @@ class _AudioVisualPlayerWidgetState extends State<AudioVisualPlayerWidget> {
                 audioVisualPlayer.addPlayer(new AudioVisualPlayerAudioDecorator());
               }
 
-              //await compute(audioVisualPlayer.playText, _textTranslated);
-              //compute(audioVisualPlayer.playText, _textTranslated);
               if(audioVisualPlayer.players.isNotEmpty ){  //If there are players, play
                 setState(() {
                   isPlaying = true;
