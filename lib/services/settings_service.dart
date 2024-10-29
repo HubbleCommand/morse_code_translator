@@ -7,9 +7,13 @@ import '../models/alphabet.dart';
 
 
 class SettingsService extends ChangeNotifier {
-  int elementDuration = Preferences.elementDuration.defaultValue;
-  Alphabet alphabet = Preferences.alphabet.defaultValue;
-  FilteringTextInputFormatter alphabetFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+  int _elementDuration = Preferences.elementDuration.defaultValue;
+  Alphabet _alphabet = Preferences.alphabet.defaultValue;
+  FilteringTextInputFormatter _alphabetFilter = FilteringTextInputFormatter.allow(RegExp("[a-z A-Z 0-9]"));
+
+  int get elementDuration => _elementDuration;
+  Alphabet get alphabet => _alphabet;
+  FilteringTextInputFormatter get alphabetFilter => _alphabetFilter;
 
   SettingsService() {
     _loadFromPreferences();
@@ -17,9 +21,9 @@ class SettingsService extends ChangeNotifier {
 
   void _loadFromPreferences() async {
     SharedPreferencesAsync prefs = SharedPreferencesAsync();
-    elementDuration = await Preferences.elementDuration.get(prefs: prefs);
-    alphabet = await Preferences.alphabet.get(prefs: prefs);
-    alphabetFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
+    _elementDuration = await Preferences.elementDuration.get(prefs: prefs);
+    _alphabet = await Preferences.alphabet.get(prefs: prefs);
+    _alphabetFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
     notifyListeners();
   }
 
@@ -30,13 +34,13 @@ class SettingsService extends ChangeNotifier {
   }
 
   void setAlphabet(Alphabet alphabet) {
-    this.alphabet = alphabet;
-    alphabetFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
+    this._alphabet = alphabet;
+    _alphabetFilter = FilteringTextInputFormatter.allow(RegExp(alphabet.getValidRegex()));
     notifyListeners();
   }
 
   void setDuration(int duration) {
-    elementDuration = duration;
+    _elementDuration = duration;
     notifyListeners();
   }
 }
